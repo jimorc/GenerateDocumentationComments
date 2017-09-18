@@ -4,7 +4,7 @@ using Xunit;
 
 namespace GenerateDocumentationCommentsTests
 {
-    public class GenDocClassDeclarationTests
+    public class GenerateDocumentationClassDeclarationTests
     {
         [Fact]
         public void ShouldAddSummaryDocCommentsToIndented4SpacesPublicClassDeclaration()
