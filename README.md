@@ -12,6 +12,7 @@ https://jaipblog.wordpress.com/2017/09/15/i-was-doing-it-all-wrong-and-how-i-cha
 defines an initial set of user stories and a set of 9 unit tests for adding summary documentation
 comments for class declarations.
 2. Creating A Documentation Comment Generator For C#: High-Level Design Decisions (to be published)
-discusses various ways of triggering the generation of boilerplate documentation comments.
+discusses various ways of triggering the generation of boilerplate documentation comments, and why I
+chose to create this as a Visual Studio extension.
 
 Future posts will be used to extend the discussion.
