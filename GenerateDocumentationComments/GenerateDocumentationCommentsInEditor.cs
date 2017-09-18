@@ -1,8 +1,14 @@
 ﻿using System;
 using System.ComponentModel.Design;
-using System.Globalization;
+using System.Linq;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace GenerateDocumentationComments
 {
@@ -87,17 +93,30 @@ namespace GenerateDocumentationComments
         /// <param name="e">Event args.</param>
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            string title = "GenerateDocumentationCommentsInEditor";
+            var textView = GetTextViewOfActiveDocument();
+            if (textView != null)
+            {
+                var document = Extensions.GetRelatedDocuments(textView.TextBuffer).FirstOrDefault();
+                var syntaxTree = document.GetSyntaxTreeAsync().Result;
+                var root = syntaxTree.GetRoot();
+                var rewriter = new DocumentCommentsRewriter();
+                var newRoot = rewriter.Visit(root);
+                textView.TextBuffer.Replace(new Span(0, textView.TextSnapshot.Length),
+                    newRoot.ToFullString());
+            }
+        }
 
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.ServiceProvider,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+
+        private ITextView GetTextViewOfActiveDocument()
+        {
+            var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
+            var textManager = (IVsTextManager)Package.GetGlobalService(typeof(SVsTextManager));
+            IVsTextView activeView = null;
+            ErrorHandler.ThrowOnFailure(textManager.GetActiveView(1, null, out activeView));
+            var editorAdapter = componentModel.GetService<IVsEditorAdaptersFactoryService>();
+            var textView = editorAdapter.GetWpfTextView(activeView);
+            return (textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
+                ? textView : null;
         }
     }
 }
