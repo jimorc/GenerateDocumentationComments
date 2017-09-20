@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Design;
-using System.Linq;
-using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
@@ -96,8 +95,8 @@ namespace GenerateDocumentationComments
             var textView = GetTextViewOfActiveDocument();
             if (textView != null)
             {
-                var document = Extensions.GetRelatedDocuments(textView.TextBuffer).FirstOrDefault();
-                var syntaxTree = document.GetSyntaxTreeAsync().Result;
+                var text = textView.TextSnapshot.GetText();
+                var syntaxTree = CSharpSyntaxTree.ParseText(text);
                 var root = syntaxTree.GetRoot();
                 var rewriter = new DocumentCommentsRewriter();
                 var newRoot = rewriter.Visit(root);
