@@ -22,8 +22,8 @@ the active document (the document in the active editor window). It shows how to 
 in the active document, at a high level how to modify the source code to add documentation comments, and
 finally, how to write the modified source code back to the active document.
 4. Creating A Documentation Comment Generator For C#: DocumentCommentsRewriter Class (to be published) discusses how
-each documentation comment type can be generated and how that translates into the structure of the class that generates
-that output.
+each syntax node is processed for documentation comment generation, and how that translates into the structure of the 
+class that generates that output.
 5. Creating A Documentation Comment Generator For C#: Testing (to be published) discusses the various levels of testing
 that are and can be performed on the documentation comments generator and how the extension is designed for testing.
 
