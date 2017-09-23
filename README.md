@@ -31,6 +31,8 @@ Future posts will be used to extend the discussion.
 
 # Requirements
 1. Visual Studio 2017, with at a minimum, the following workloads:
-  * .Net desktop development
-  * Visual Studio extension development
+  ** .Net desktop development
+  ** Visual Studio extension development
 2. .Net Compiler Platform SDK
+3. DGML editor if you want to activate the View Directed Syntax Graph menu item in the Syntax Visualizer. See the
+Syntax Visualizer section of Tools For Viewing And Creating Roslyn Syntax Trees (to be published).
