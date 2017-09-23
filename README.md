@@ -28,3 +28,9 @@ class that generates that output.
 that are and can be performed on the documentation comments generator and how the extension is designed for testing.
 
 Future posts will be used to extend the discussion.
+
+# Requirements
+1. Visual Studio 2017, with at a minimum, the following workloads:
+  * .Net desktop development
+  * Visual Studio extension development
+2. .Net Compiler Platform SDK
