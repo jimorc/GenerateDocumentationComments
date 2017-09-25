@@ -95,13 +95,13 @@ namespace GenerateDocumentationComments
             var textView = GetTextViewOfActiveDocument();
             if (textView != null)
             {
-                var text = textView.TextSnapshot.GetText();
-                var syntaxTree = CSharpSyntaxTree.ParseText(text);
+                var code = textView.TextSnapshot.GetText();
+                var syntaxTree = CSharpSyntaxTree.ParseText(code);
                 var root = syntaxTree.GetRoot();
                 var rewriter = new DocumentCommentsRewriter();
-                var newRoot = rewriter.Visit(root);
+                var newCode = rewriter.Visit(root).ToFullString();
                 textView.TextBuffer.Replace(new Span(0, textView.TextSnapshot.Length),
-                    newRoot.ToFullString());
+                    newCode);
             }
         }
 
