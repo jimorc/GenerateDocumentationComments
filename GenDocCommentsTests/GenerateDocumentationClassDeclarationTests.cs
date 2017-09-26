@@ -24,9 +24,8 @@ namespace GenerateDocumentationCommentsTests
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new GenerateDocumentationComments.DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(expected, result.ToFullString());
         }
@@ -48,9 +47,8 @@ namespace GenerateDocumentationCommentsTests
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(expected, result.ToFullString());
         }
@@ -72,9 +70,8 @@ public class Class1
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(expected, result.ToFullString());
         }
@@ -96,9 +93,8 @@ public class Class1
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(expected, result.ToFullString());
         }
@@ -120,9 +116,8 @@ public class Class1
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(expected, result.ToFullString());
         }
@@ -141,9 +136,8 @@ public class Class1
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(expected, result.ToFullString());
         }
@@ -162,9 +156,8 @@ public class Class1
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(expected, result.ToFullString());
         }
@@ -182,9 +175,8 @@ public class Class1
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(classDecl, result.ToFullString());
         }
@@ -202,9 +194,8 @@ public class Class1
             var tree = CSharpSyntaxTree.ParseText(classDecl);
             var rewriter = new DocumentCommentsRewriter();
             var root = (CompilationUnitSyntax)tree.GetRoot();
-            var classDeclSyntax = (ClassDeclarationSyntax)root.Members[0];
 
-            var result = rewriter.VisitClassDeclaration(classDeclSyntax);
+            var result = rewriter.Visit(root);
 
             Assert.Equal(classDecl, result.ToFullString());
         }
