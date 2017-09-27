@@ -24,8 +24,11 @@ finally, how to write the modified source code back to the active document.
 4. Creating A Documentation Comment Generator For C#: DocumentCommentsRewriter Class (to be published) discusses how
 each syntax node is processed for documentation comment generation, and how that translates into the structure of the 
 class that generates that output.
-5. Creating A Documentation Comment Generator For C#: Testing (to be published) discusses the various levels of testing
-that are and can be performed on the documentation comments generator and how the extension is designed for testing.
+5. Creating A Documentation Comment Generator For C#: Unit Testing (to be published) begins the discussion of
+testing of the documentation comments generator by looking at the four levels of testing and then discussing
+unit testing in some detail.
+6. Creating A Documentation Comment Generator For C#: Integration, System, And Acceptance Testing 
+(to be published)discusses integration, system, and acceptance testing that I will perform.
 
 Future posts will be used to extend the discussion.
 
