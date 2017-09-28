@@ -26,10 +26,10 @@ namespace GenerateDocumentationComments
                     return base.VisitClassDeclaration(node);
                 }
                 var leadingTriviaList = new LeadingTriviaList(accessToken.LeadingTrivia);
-                var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
-                    BaseDocumentationComment.CommentType.Summary);
                 leadingTriviaList.Add(
                     SyntaxFactory.DocumentationCommentExterior("/// "));
+                var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
+                    BaseDocumentationComment.CommentType.Summary);
                 var summaryDocumentation = summaryComment.GenerateXmlComment(
                     leadingTriviaList);
                 var summaryTrivia = SyntaxFactory.Trivia(summaryDocumentation);
