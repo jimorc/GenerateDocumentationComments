@@ -37,7 +37,6 @@ namespace GenerateDocumentationComments
                         leadingTriviaList.Add(lastLeadingTrivia);
                     }
                 }
-                var trailingTrivia = accessTypeToken.TrailingTrivia.First();
                 var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
                     BaseDocumentationComment.CommentType.Summary);
                 leadingTriviaList.Add(
