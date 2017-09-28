@@ -18,17 +18,17 @@ namespace GenerateDocumentationComments
     {
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
-            SyntaxToken accessTypeToken = GetPublicProtectedOrInternalAccessToken(node);
-            if (!accessTypeToken.IsKind(SyntaxKind.None))
+            var accessToken = new AccessToken(node);
+            if(!accessToken.IsKind(SyntaxKind.None))
             {
                 var leadingTriviaList = new List<SyntaxTrivia>();
-                var leadingTrivia = accessTypeToken.LeadingTrivia;
+                var leadingTrivia = accessToken.LeadingTrivia;
+                if (accessToken.LeadingTriviaContainsComment("summary"))
+                {
+                    return base.VisitClassDeclaration(node);
+                }
                 if (leadingTrivia.Count > 0)
                 {
-                    if (CheckForXmlComment(leadingTrivia, "summary"))
-                    {
-                        return base.VisitClassDeclaration(node);
-                    }
                     var lastLeadingTrivia = leadingTrivia.Last();
                     // if the access level keyword is not at start of a line, then add the whitespace
                     // to make the comments line up with the start of the text on the class line.
@@ -52,35 +52,11 @@ namespace GenerateDocumentationComments
                 {
                     newLeadingTrivia = newLeadingTrivia.Add(leadingTrivia.Last());
                 }
-                var token = accessTypeToken.WithLeadingTrivia(newLeadingTrivia);
-                node = node.ReplaceToken(accessTypeToken, token);
+                accessToken.ReplaceLeadingTrivia(newLeadingTrivia);
+                var oldAccessToken = new AccessToken(node);
+                node = node.ReplaceToken(oldAccessToken.Token, accessToken.Token);
             }
             return base.VisitClassDeclaration(node);
-        }
-
-        private static SyntaxToken GetPublicProtectedOrInternalAccessToken(ClassDeclarationSyntax node)
-        {
-            return (SyntaxToken)node.DescendantNodesAndTokens()
-                .Where((aNode) => aNode.IsKind(SyntaxKind.PublicKeyword)
-                || aNode.IsKind(SyntaxKind.ProtectedKeyword)
-                || aNode.IsKind(SyntaxKind.InternalKeyword))
-                .FirstOrDefault();
-        }
-
-        private static bool CheckForXmlComment(SyntaxTriviaList triviaList, string eltType)
-        {
-            foreach (var trivia in triviaList)
-            {
-                if (trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
-                    || trivia.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))
-                {
-                    if (trivia.ToString().Contains("<" + eltType + ">"))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
     }
 }
