@@ -32,9 +32,17 @@ namespace GenerateDocumentationComments
             return false;
         }
 
-        public void ReplaceLeadingTrivia(SyntaxTriviaList trivia)
+        public void ReplaceSummaryTrivia(SyntaxTrivia trivia)
         {
-            token = token.WithLeadingTrivia(trivia);
+            var newLeadingTrivia =
+                SyntaxFactory.TriviaList(trivia);
+            var leadingTrivia = LeadingTrivia;
+            if (leadingTrivia.Count > 0
+                && leadingTrivia.Last().IsKind(SyntaxKind.WhitespaceTrivia))
+            {
+                newLeadingTrivia = newLeadingTrivia.Add(leadingTrivia.Last());
+            }
+            token = token.WithLeadingTrivia(newLeadingTrivia);
         }
 
         public SyntaxTriviaList LeadingTrivia

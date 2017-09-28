@@ -28,21 +28,14 @@ namespace GenerateDocumentationComments
                 var leadingTriviaList = new LeadingTriviaList(accessToken.LeadingTrivia);
                 leadingTriviaList.Add(
                     SyntaxFactory.DocumentationCommentExterior("/// "));
+
                 var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
                     BaseDocumentationComment.CommentType.Summary);
                 var summaryDocumentation = summaryComment.GenerateXmlComment(
                     leadingTriviaList);
                 var summaryTrivia = SyntaxFactory.Trivia(summaryDocumentation);
+                accessToken.ReplaceSummaryTrivia(summaryTrivia);
 
-                var newLeadingTrivia =
-                    SyntaxFactory.TriviaList(summaryTrivia);
-                var leadingTrivia = accessToken.LeadingTrivia;
-                if (leadingTrivia.Count > 0
-                    && leadingTrivia.Last().IsKind(SyntaxKind.WhitespaceTrivia))
-                {
-                    newLeadingTrivia = newLeadingTrivia.Add(leadingTrivia.Last());
-                }
-                accessToken.ReplaceLeadingTrivia(newLeadingTrivia);
                 var oldAccessToken = new AccessToken(node);
                 node = node.ReplaceToken(oldAccessToken.Token, accessToken.Token);
             }
