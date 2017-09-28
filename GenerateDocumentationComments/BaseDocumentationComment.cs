@@ -31,11 +31,11 @@ namespace GenerateDocumentationComments
         }
 
         internal virtual DocumentationCommentTriviaSyntax GenerateXmlComment(
-            List<SyntaxTrivia> leadingTrivia)
+            LeadingTriviaList leadingTrivia)
         { return null; }
 
         protected static SyntaxToken GenerateDocumentCommentLine(
-    List<SyntaxTrivia> leadingTriviaList,
+    LeadingTriviaList leadingTriviaList,
     string docCommentText)
         {
             var docCommentTriviaList = GenerateTriviaList(leadingTriviaList);
@@ -47,7 +47,7 @@ namespace GenerateDocumentationComments
             return triviaLiteral;
         }
 
-        private static SyntaxTriviaList GenerateTriviaList(List<SyntaxTrivia> trivia)
+        private static SyntaxTriviaList GenerateTriviaList(LeadingTriviaList trivia)
         {
             var triviaList = SyntaxFactory.TriviaList();
             foreach (var triv in trivia)
@@ -58,7 +58,7 @@ namespace GenerateDocumentationComments
         }
 
         protected static XmlElementSyntax GenerateXmlExampleElement(
-            List<SyntaxTrivia> leadingTrivia,
+            LeadingTriviaList leadingTrivia,
             string elementName,
             string elementText)
         {
@@ -120,7 +120,7 @@ namespace GenerateDocumentationComments
             { }
 
         internal override DocumentationCommentTriviaSyntax GenerateXmlComment(
-            List<SyntaxTrivia> leadingTrivia)
+            LeadingTriviaList leadingTrivia)
         {
             var summaryDocumentation = SyntaxFactory.DocumentationCommentTrivia(
                     SyntaxKind.SingleLineDocumentationCommentTrivia,

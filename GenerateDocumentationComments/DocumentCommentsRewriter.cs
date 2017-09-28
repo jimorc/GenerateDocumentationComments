@@ -21,22 +21,11 @@ namespace GenerateDocumentationComments
             var accessToken = new AccessToken(node);
             if(!accessToken.IsKind(SyntaxKind.None))
             {
-                var leadingTriviaList = new List<SyntaxTrivia>();
-                var leadingTrivia = accessToken.LeadingTrivia;
                 if (accessToken.LeadingTriviaContainsComment("summary"))
                 {
                     return base.VisitClassDeclaration(node);
                 }
-                if (leadingTrivia.Count > 0)
-                {
-                    var lastLeadingTrivia = leadingTrivia.Last();
-                    // if the access level keyword is not at start of a line, then add the whitespace
-                    // to make the comments line up with the start of the text on the class line.
-                    if (lastLeadingTrivia.IsKind(SyntaxKind.WhitespaceTrivia))
-                    {
-                        leadingTriviaList.Add(lastLeadingTrivia);
-                    }
-                }
+                var leadingTriviaList = new LeadingTriviaList(accessToken.LeadingTrivia);
                 var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
                     BaseDocumentationComment.CommentType.Summary);
                 leadingTriviaList.Add(
@@ -47,6 +36,7 @@ namespace GenerateDocumentationComments
 
                 var newLeadingTrivia =
                     SyntaxFactory.TriviaList(summaryTrivia);
+                var leadingTrivia = accessToken.LeadingTrivia;
                 if (leadingTrivia.Count > 0
                     && leadingTrivia.Last().IsKind(SyntaxKind.WhitespaceTrivia))
                 {
