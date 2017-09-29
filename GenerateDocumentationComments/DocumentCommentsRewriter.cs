@@ -39,5 +39,31 @@ namespace GenerateDocumentationComments
             }
             return base.VisitClassDeclaration(node);
         }
+
+        public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            var accessToken = new AccessToken(node);
+            if (!accessToken.IsKind(SyntaxKind.None))
+            {
+                if (accessToken.LeadingTriviaContainsComment("summary"))
+                {
+                    return base.VisitConstructorDeclaration(node);
+                }
+                var leadingTriviaList = new LeadingTriviaList(accessToken.LeadingTrivia);
+                leadingTriviaList.Add(
+                    SyntaxFactory.DocumentationCommentExterior("/// "));
+
+                var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
+                    BaseDocumentationComment.CommentType.Summary);
+                var summaryDocumentation = summaryComment.GenerateXmlComment(
+                    leadingTriviaList);
+                var summaryTrivia = SyntaxFactory.Trivia(summaryDocumentation);
+                accessToken.ReplaceSummaryTrivia(summaryTrivia);
+
+                var oldAccessToken = new AccessToken(node);
+                node = node.ReplaceToken(oldAccessToken.Token, accessToken.Token);
+            }
+            return base.VisitConstructorDeclaration(node);
+        }
     }
 }
