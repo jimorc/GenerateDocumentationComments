@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -53,10 +54,16 @@ namespace GenerateDocumentationComments
                 leadingTriviaList.Add(
                     SyntaxFactory.DocumentationCommentExterior("/// "));
 
+                var identifier = node.DescendantTokens()
+                    .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
+                    .First();
+                string summary = string.Format(
+                    "Initializes a new instance of the <see cref=\"{0}\"/> class.",
+                    identifier.ValueText);
                 var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
-                    BaseDocumentationComment.CommentType.Summary);
+                    BaseDocumentationComment.CommentType.Summary, summary);
                 var summaryDocumentation = summaryComment.GenerateXmlComment(
-                    leadingTriviaList);
+                    leadingTriviaList );
                 var summaryTrivia = SyntaxFactory.Trivia(summaryDocumentation);
                 accessToken.ReplaceSummaryTrivia(summaryTrivia);
 

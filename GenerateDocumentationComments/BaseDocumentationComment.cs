@@ -130,7 +130,7 @@ namespace GenerateDocumentationComments
                             .WithTextTokens(
                                 SyntaxFactory.TokenList(
                                     GenerateDocumentCommentLine(leadingTrivia, ""))),
-                            GenerateXmlExampleElement(leadingTrivia, "summary", ""),
+                            GenerateXmlExampleElement(leadingTrivia, "summary", CommentText),
                             SyntaxFactory.XmlText()
                             .WithTextTokens(
                                 SyntaxFactory.TokenList(

@@ -27,7 +27,7 @@ namespace GenerateDocumentationCommentsTests
 public class Class1
 {
     /// <summary>
-    /// 
+    /// Initializes a new instance of the <see cref=""Class1""/> class.
     /// </summary>
     public Class1()
     {
@@ -41,5 +41,6 @@ public class Class1
 
             Assert.Equal(expected, result.ToFullString());
         }
+
     }
 }
