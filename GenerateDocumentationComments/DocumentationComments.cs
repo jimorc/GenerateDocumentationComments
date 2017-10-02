@@ -32,11 +32,13 @@ namespace GenerateDocumentationComments
                     .Select(i => i)
                     .OfType<XmlElementSyntax>();
                 var summaryTrivia = sumTrivia
-                    .Where(t => t.StartTag.Name.ToString().Equals("summary")).FirstOrDefault();
+                    .Where(t => t.StartTag.Name.ToString().Equals("summary"))
+                    .FirstOrDefault();
                 var sumComment = summaryTrivia.ChildNodes()
                     .OfType<XmlTextSyntax>().FirstOrDefault();
                 var literalToken = sumComment.ChildTokens()
-                    .Where(t => t.Kind() == SyntaxKind.XmlTextLiteralToken).FirstOrDefault();
+                    .Where(t => t.IsKind(SyntaxKind.XmlTextLiteralToken))
+                    .FirstOrDefault();
                 summaryComment = BaseDocumentationComment.CreateDocumentationComment(
                     BaseDocumentationComment.CommentType.Summary,
                     literalToken.Text.TrimStart());
