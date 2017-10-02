@@ -42,5 +42,39 @@ public class Class1
             Assert.Equal(expected, result.ToFullString());
         }
 
+        [Fact]
+        public void ShouldNotAddSummaryDocCommentsToConstructorDeclarationWithCommentsNoArguments()
+        {
+            var consDecl =
+    @"public class Class1
+{
+    /// <summary>
+    /// Non-standard constructor comment.
+    /// </summary>
+    public Class1()
+    {
+    }
+}";
+            var expected =
+                @"/// <summary>
+/// 
+/// </summary>
+public class Class1
+{
+    /// <summary>
+    /// Non-standard constructor comment.
+    /// </summary>
+    public Class1()
+    {
+    }
+}";
+            var tree = CSharpSyntaxTree.ParseText(consDecl);
+            var rewriter = new GenerateDocumentationComments.DocumentCommentsRewriter();
+            var root = (CompilationUnitSyntax)tree.GetRoot();
+
+            var result = rewriter.Visit(root);
+
+            Assert.Equal(expected, result.ToFullString());
+        }
     }
 }
