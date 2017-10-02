@@ -67,8 +67,8 @@ namespace GenerateDocumentationComments
             SyntaxTriviaList leadingTriviaList = new SyntaxTriviaList();
             for (int i = 0; i < initialLeadingTrivia.Count(); ++i)
             {
-                if (initialLeadingTrivia[i].Kind() != SyntaxKind.SingleLineDocumentationCommentTrivia
-                    && initialLeadingTrivia[i].Kind() != SyntaxKind.MultiLineDocumentationCommentTrivia)
+                if (!initialLeadingTrivia[i].IsKind( SyntaxKind.SingleLineDocumentationCommentTrivia)
+                    && !initialLeadingTrivia[i].IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))
                 {
                     leadingTriviaList = leadingTriviaList.Add(initialLeadingTrivia[i]);
                 }
