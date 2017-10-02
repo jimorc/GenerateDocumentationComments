@@ -32,7 +32,7 @@ namespace GenerateDocumentationComments
             return false;
         }
 
-        public void ReplaceSummaryTrivia(SyntaxTrivia trivia)
+        public void ReplaceSummaryTrivia(SyntaxTriviaList trivia)
         {
             var newLeadingTrivia =
                 SyntaxFactory.TriviaList(trivia);

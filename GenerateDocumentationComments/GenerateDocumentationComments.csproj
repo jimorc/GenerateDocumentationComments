@@ -56,10 +56,10 @@
   <ItemGroup>
     <Compile Include="AccessToken.cs" />
     <Compile Include="BaseDocumentationComment.cs" />
+    <Compile Include="DocumentationComments.cs" />
     <Compile Include="DocumentCommentsRewriter.cs" />
     <Compile Include="GenerateDocumentationCommentsInEditor.cs" />
     <Compile Include="GenerateDocumentationCommentsInEditorPackage.cs" />
-    <Compile Include="LeadingTriviaList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

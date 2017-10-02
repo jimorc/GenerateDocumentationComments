@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -20,20 +21,10 @@ namespace GenerateDocumentationComments
             var accessToken = new AccessToken(node);
             if(!accessToken.IsKind(SyntaxKind.None))
             {
-                if (accessToken.LeadingTriviaContainsComment("summary"))
-                {
-                    return base.VisitClassDeclaration(node);
-                }
-                var leadingTriviaList = new LeadingTriviaList(accessToken.LeadingTrivia);
-                leadingTriviaList.Add(
-                    SyntaxFactory.DocumentationCommentExterior("/// "));
-
-                var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
-                    BaseDocumentationComment.CommentType.Summary);
-                var summaryDocumentation = summaryComment.GenerateXmlComment(
-                    leadingTriviaList);
-                var summaryTrivia = SyntaxFactory.Trivia(summaryDocumentation);
-                accessToken.ReplaceSummaryTrivia(summaryTrivia);
+                DocumentationComments comments = new DocumentationComments(
+                    node.GetLeadingTrivia());
+                var leadingTrivia = comments.GenerateLeadingTrivia();
+                accessToken.ReplaceSummaryTrivia(leadingTrivia);
 
                 var oldAccessToken = new AccessToken(node);
                 node = node.ReplaceToken(oldAccessToken.Token, accessToken.Token);
@@ -46,30 +37,21 @@ namespace GenerateDocumentationComments
             var accessToken = new AccessToken(node);
             if (!accessToken.IsKind(SyntaxKind.None))
             {
-                if (accessToken.LeadingTriviaContainsComment("summary"))
-                {
-                    return base.VisitConstructorDeclaration(node);
-                }
-                var leadingTriviaList = new LeadingTriviaList(accessToken.LeadingTrivia);
-                leadingTriviaList.Add(
-                    SyntaxFactory.DocumentationCommentExterior("/// "));
-
                 var identifier = node.DescendantTokens()
-                    .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
-                    .First();
+                     .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
+                     .First();
                 string summary = string.Format(
                     "Initializes a new instance of the <see cref=\"{0}\"/> class.",
                     identifier.ValueText);
-                var summaryComment = BaseDocumentationComment.CreateDocumentationComment(
-                    BaseDocumentationComment.CommentType.Summary, summary);
-                var summaryDocumentation = summaryComment.GenerateXmlComment(
-                    leadingTriviaList );
-                var summaryTrivia = SyntaxFactory.Trivia(summaryDocumentation);
-                accessToken.ReplaceSummaryTrivia(summaryTrivia);
+
+                DocumentationComments comments = new DocumentationComments(
+                    accessToken.LeadingTrivia, summary);
+                var leadingTrivia = comments.GenerateLeadingTrivia();
+                accessToken.ReplaceSummaryTrivia(leadingTrivia);
 
                 var oldAccessToken = new AccessToken(node);
                 node = node.ReplaceToken(oldAccessToken.Token, accessToken.Token);
-            }
+           }
             return base.VisitConstructorDeclaration(node);
         }
     }

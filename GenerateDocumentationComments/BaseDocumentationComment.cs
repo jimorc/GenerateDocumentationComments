@@ -9,7 +9,8 @@ namespace GenerateDocumentationComments
     {
         public enum CommentType
         {
-            Summary
+            Summary,
+            Parameter
         }
         protected BaseDocumentationComment(CommentType type, string text)
         {
@@ -30,13 +31,13 @@ namespace GenerateDocumentationComments
             }
         }
 
-        internal virtual DocumentationCommentTriviaSyntax GenerateXmlComment(
-            LeadingTriviaList leadingTrivia)
-        { return null; }
+        internal virtual SyntaxTrivia GenerateXmlComment(
+            SyntaxTriviaList leadingTrivia)
+        { return new SyntaxTrivia(); }
 
         protected static SyntaxToken GenerateDocumentCommentLine(
-    LeadingTriviaList leadingTriviaList,
-    string docCommentText)
+            SyntaxTriviaList leadingTriviaList,
+            string docCommentText)
         {
             var docCommentTriviaList = GenerateTriviaList(leadingTriviaList);
             var triviaLiteral = SyntaxFactory.XmlTextLiteral(
@@ -47,7 +48,7 @@ namespace GenerateDocumentationComments
             return triviaLiteral;
         }
 
-        private static SyntaxTriviaList GenerateTriviaList(LeadingTriviaList trivia)
+        private static SyntaxTriviaList GenerateTriviaList(SyntaxTriviaList trivia)
         {
             var triviaList = SyntaxFactory.TriviaList();
             foreach (var triv in trivia)
@@ -58,7 +59,7 @@ namespace GenerateDocumentationComments
         }
 
         protected static XmlElementSyntax GenerateXmlExampleElement(
-            LeadingTriviaList leadingTrivia,
+            SyntaxTriviaList leadingTrivia,
             string elementName,
             string elementText)
         {
@@ -119,25 +120,19 @@ namespace GenerateDocumentationComments
         : base(CommentType.Summary, text)
             { }
 
-        internal override DocumentationCommentTriviaSyntax GenerateXmlComment(
-            LeadingTriviaList leadingTrivia)
+        internal override SyntaxTrivia GenerateXmlComment(
+            SyntaxTriviaList leadingTrivia)
         {
             var summaryDocumentation = SyntaxFactory.DocumentationCommentTrivia(
                     SyntaxKind.SingleLineDocumentationCommentTrivia,
                     SyntaxFactory.List<XmlNodeSyntax>(
                         new XmlNodeSyntax[]{
-                            SyntaxFactory.XmlText()
-                            .WithTextTokens(
-                                SyntaxFactory.TokenList(
-                                    GenerateDocumentCommentLine(leadingTrivia, ""))),
                             GenerateXmlExampleElement(leadingTrivia, "summary", CommentText),
                             SyntaxFactory.XmlText()
                             .WithTextTokens(
                                 SyntaxFactory.TokenList(
                                 GenerateXmlNewLineTrivia())) }));
-            return summaryDocumentation;
+            return SyntaxFactory.Trivia(summaryDocumentation);
         }
     }
-
-
 }

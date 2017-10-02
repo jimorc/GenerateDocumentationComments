@@ -193,9 +193,16 @@ public class Class1
         public void ShouldNotAddSummaryDocCommentsClassDeclarationWithMultilineSummaryComments()
         {
             var classDecl =
-@"    /** <summary>
+@"        /** <summary>
          A summary description
          </summary> */
+        public class Class1
+        {
+        }";
+            var expected =
+@"        /// <summary>
+        /// A summary description
+        /// </summary>
         public class Class1
         {
         }";
@@ -206,7 +213,7 @@ public class Class1
 
             var result = rewriter.VisitClassDeclaration(classDeclSyntax);
 
-            Assert.Equal(classDecl, result.ToFullString());
+            Assert.Equal(expected, result.ToFullString());
         }
     }
 }
