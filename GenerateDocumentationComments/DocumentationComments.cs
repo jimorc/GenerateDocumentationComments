@@ -61,20 +61,27 @@ namespace GenerateDocumentationComments
         private SyntaxTriviaList GenerateInitialLeadingTrivia()
         {
             SyntaxTriviaList leadingTriviaList = new SyntaxTriviaList();
-            for (int i = 0; i < initialLeadingTrivia.Count(); ++i)
+            if (initialLeadingTrivia.Count() > 0)
             {
-                if (!initialLeadingTrivia[i].IsKind( SyntaxKind.SingleLineDocumentationCommentTrivia)
-                    && !initialLeadingTrivia[i].IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))
+                var lastLeadingTrivia = initialLeadingTrivia.Last();
+                if (lastLeadingTrivia.IsKind(SyntaxKind.WhitespaceTrivia))
                 {
-                    leadingTriviaList = leadingTriviaList.Add(initialLeadingTrivia[i]);
+                    leadingTriviaList = leadingTriviaList.Add(lastLeadingTrivia);
                 }
-                else
+                for (int i = 1; i < initialLeadingTrivia.Count(); ++i)
                 {
-                    break;
+                    if (!initialLeadingTrivia[i].IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
+                        && !initialLeadingTrivia[i].IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))
+                    {
+                        leadingTriviaList = leadingTriviaList.Add(initialLeadingTrivia[i]);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
             return leadingTriviaList;
-
         }
 
         private SyntaxTriviaList initialLeadingTrivia;
