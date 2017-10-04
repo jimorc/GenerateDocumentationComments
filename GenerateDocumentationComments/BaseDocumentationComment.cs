@@ -130,7 +130,7 @@ namespace GenerateDocumentationComments
                             SyntaxFactory.XmlText()
                             .WithTextTokens(
                                 SyntaxFactory.TokenList(
-                                GenerateXmlNewLineTrivia())) }));
+                                    GenerateXmlNewLineTrivia())) }));
             return SyntaxFactory.Trivia(summaryDocumentation);
         }
     }

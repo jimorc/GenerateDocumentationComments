@@ -17,24 +17,34 @@ namespace GenerateDocumentationComments
     {
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
-            var accessToken = new AccessToken(node);
-            if(!accessToken.IsKind(SyntaxKind.None))
+            var accessModifier = node.Modifiers
+                .Where(m => m.IsKind(SyntaxKind.PublicKeyword)
+                    || m.IsKind(SyntaxKind.ProtectedKeyword)
+                    || m.IsKind(SyntaxKind.InternalKeyword))
+                .FirstOrDefault();
+            if(!accessModifier.IsKind(SyntaxKind.None))
             {
                 DocumentationComments comments = new DocumentationComments(
                     node.GetLeadingTrivia());
                 var leadingTrivia = comments.GenerateLeadingTrivia();
-                accessToken.ReplaceSummaryTrivia(leadingTrivia);
-
-                var oldAccessToken = new AccessToken(node);
-                node = node.ReplaceToken(oldAccessToken.Token, accessToken.Token);
+                var initialLeadingTrivia = accessModifier.LeadingTrivia.LastOrDefault();
+                if (!initialLeadingTrivia.IsKind(SyntaxKind.None))
+                {
+                    leadingTrivia = leadingTrivia.Add(initialLeadingTrivia);
+                }
+                node = node.WithLeadingTrivia(leadingTrivia);
             }
             return base.VisitClassDeclaration(node);
         }
 
         public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
-            var accessToken = new AccessToken(node);
-            if (!accessToken.IsKind(SyntaxKind.None))
+            var accessModifier = node.Modifiers
+                .Where(m => m.IsKind(SyntaxKind.PublicKeyword)
+                    || m.IsKind(SyntaxKind.ProtectedKeyword)
+                    || m.IsKind(SyntaxKind.InternalKeyword))
+                .FirstOrDefault();
+            if (accessModifier != null)
             {
                 var identifier = node.DescendantTokens()
                      .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
@@ -44,13 +54,15 @@ namespace GenerateDocumentationComments
                     identifier.ValueText);
 
                 DocumentationComments comments = new DocumentationComments(
-                    accessToken.LeadingTrivia, summary);
+                    node.GetLeadingTrivia(), summary);
                 var leadingTrivia = comments.GenerateLeadingTrivia();
-                accessToken.ReplaceSummaryTrivia(leadingTrivia);
-
-                var oldAccessToken = new AccessToken(node);
-                node = node.ReplaceToken(oldAccessToken.Token, accessToken.Token);
-           }
+                var initialLeadingTrivia = accessModifier.LeadingTrivia.LastOrDefault();
+                if (!initialLeadingTrivia.IsKind(SyntaxKind.None))
+                {
+                    leadingTrivia = leadingTrivia.Add(initialLeadingTrivia);
+                }
+                node = node.WithLeadingTrivia(leadingTrivia);
+            }
             return base.VisitConstructorDeclaration(node);
         }
     }

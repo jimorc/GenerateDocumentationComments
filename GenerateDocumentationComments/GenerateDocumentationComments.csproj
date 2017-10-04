@@ -54,7 +54,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AccessToken.cs" />
     <Compile Include="BaseDocumentationComment.cs" />
     <Compile Include="DocumentationComments.cs" />
     <Compile Include="DocumentCommentsRewriter.cs" />

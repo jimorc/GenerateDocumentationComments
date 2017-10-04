@@ -50,11 +50,11 @@ namespace GenerateDocumentationComments
         {
             SyntaxTriviaList initialTriviaList = GenerateInitialLeadingTrivia();
             SyntaxTriviaList leadingTriviaList = initialTriviaList;
-                initialTriviaList = initialTriviaList.Add(
-                    SyntaxFactory.DocumentationCommentExterior("/// "));
+            initialTriviaList = initialTriviaList.Add(
+                SyntaxFactory.DocumentationCommentExterior("/// "));
 
-                leadingTriviaList = initialTriviaList.Add(
-                    summaryComment.GenerateXmlComment(initialTriviaList));
+            leadingTriviaList = initialTriviaList.Add(
+                summaryComment.GenerateXmlComment(initialTriviaList));
             return leadingTriviaList;
         }
 
