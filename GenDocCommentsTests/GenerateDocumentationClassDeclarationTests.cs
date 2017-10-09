@@ -7,7 +7,7 @@ namespace GenerateDocumentationCommentsTests
 {
     public class GenerateDocumentationClassDeclarationTests
     {
-        [Fact]
+/*        [Fact]
         public void ShouldAddSummaryDocCommentsToIndented4SpacesPublicClassDeclaration()
         {
             var classDecl =
@@ -54,7 +54,7 @@ namespace GenerateDocumentationCommentsTests
 
             Assert.Equal(expected, result.ToFullString());
         }
-
+        */
         [Fact]
         public void ShouldAddSummaryDocCommentsToIndentedNoSpacesPublicClassDeclaration()
         {
@@ -78,7 +78,7 @@ public class Class1
 
             Assert.Equal(expected, result.ToFullString());
         }
-
+/*
         [Fact]
         public void ShouldAddSummaryDocCommentsToIndented4SpacesProtectedClassDeclaration()
         {
@@ -193,9 +193,9 @@ public class Class1
         public void ShouldNotAddSummaryDocCommentsClassDeclarationWithMultilineSummaryComments()
         {
             var classDecl =
-@"        /** <summary>
+//@"        /** <summary>
          A summary description
-         </summary> */
+//         </summary> 
         public class Class1
         {
         }";
@@ -240,7 +240,7 @@ public class Class1
             var result = rewriter.VisitClassDeclaration(classDeclSyntax);
 
             Assert.Equal(expected, result.ToFullString());
-        }
+        }*/
 
     }
 }

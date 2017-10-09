@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -11,7 +12,60 @@ namespace GenerateDocumentationComments
             Summary,
             Parameter
         }
-        protected BaseDocumentationComment(CommentType type, string text)
+
+        internal BaseDocumentationComment(string startEndTag = "", string docCommentExterior = null)
+        {
+            commentExterior = docCommentExterior;
+            tag = startEndTag;
+        }
+
+        internal List<XmlNodeSyntax> CreateListOfNodeSyntaxes()
+        {
+            List<XmlNodeSyntax> nodesList = new List<XmlNodeSyntax>();
+            foreach (var node in nodes)
+            {
+                nodesList.Add(node.CreateSyntaxToken());
+            }
+            return nodesList;
+        }
+
+        internal List<Node> nodes = new List<Node>();
+
+        private string commentExterior;
+        private string tag;
+    }
+
+    internal class SummaryDocumentationComment : BaseDocumentationComment
+    {
+        internal SummaryDocumentationComment(string docCommentExterior)
+            : base("summary", docCommentExterior)
+        {
+            TextNode tNode = new TextNode();
+            TextLiteralToken exteriorLiteral = new TextLiteralToken(" ", "///");
+            tNode.AddToken(exteriorLiteral);
+            AddNode(tNode);
+
+            TextElementNode eltNode = new TextElementNode("summary");
+            eltNode.AddToken(new NewLineToken());
+            TextLiteralToken literalToken = new TextLiteralToken(" ", "///");
+            eltNode.AddToken(literalToken);
+            eltNode.AddToken(new NewLineToken());
+            TextLiteralToken secondLiteralToken = new TextLiteralToken(" ", "///");
+            eltNode.AddToken(secondLiteralToken);
+            AddNode(eltNode);
+
+            TextNode lastNode = new TextNode();
+            lastNode.AddToken(new NewLineToken());
+            AddNode(lastNode);
+        }
+
+        internal SummaryDocumentationComment AddNode(Node summaryNode)
+        {
+            nodes.Add(summaryNode);
+            return this;
+        }
+    }
+/*        protected BaseDocumentationComment(CommentType type, string text)
         {
             Type = type;
             CommentText = text;
@@ -133,5 +187,5 @@ namespace GenerateDocumentationComments
                                     GenerateXmlNewLineTrivia())) }));
             return SyntaxFactory.Trivia(summaryDocumentation);
         }
-    }
+    }*/
 }

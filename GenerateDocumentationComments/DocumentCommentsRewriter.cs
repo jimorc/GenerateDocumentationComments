@@ -24,7 +24,10 @@ namespace GenerateDocumentationComments
                 .FirstOrDefault();
             if(!accessModifier.IsKind(SyntaxKind.None))
             {
-                DocumentationComments comments = new DocumentationComments(
+                var docComments = new DocumentationComments();
+                var leadingTrivia = docComments.CreateCommentsTrivia();
+                node = node.WithLeadingTrivia(leadingTrivia);
+/*                DocumentationComments comments = new DocumentationComments(
                     node.GetLeadingTrivia());
                 var leadingTrivia = comments.GenerateLeadingTrivia();
                 var initialLeadingTrivia = accessModifier.LeadingTrivia.LastOrDefault();
@@ -32,14 +35,14 @@ namespace GenerateDocumentationComments
                 {
                     leadingTrivia = leadingTrivia.Add(initialLeadingTrivia);
                 }
-                node = node.WithLeadingTrivia(leadingTrivia);
+                node = node.WithLeadingTrivia(leadingTrivia);*/
             }
             return base.VisitClassDeclaration(node);
         }
 
         public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
-            var accessModifier = node.Modifiers
+/*            var accessModifier = node.Modifiers
                 .Where(m => m.IsKind(SyntaxKind.PublicKeyword)
                     || m.IsKind(SyntaxKind.ProtectedKeyword)
                     || m.IsKind(SyntaxKind.InternalKeyword))
@@ -62,7 +65,7 @@ namespace GenerateDocumentationComments
                     leadingTrivia = leadingTrivia.Add(initialLeadingTrivia);
                 }
                 node = node.WithLeadingTrivia(leadingTrivia);
-            }
+            }*/
             return base.VisitConstructorDeclaration(node);
         }
     }
