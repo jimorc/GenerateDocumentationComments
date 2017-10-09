@@ -31,7 +31,7 @@ namespace GenerateDocumentationCommentsTests
             Assert.Equal(expected, result.ToFullString());
         }
 
-/*        [Fact]
+        [Fact]
         public void ShouldAddSummaryDocCommentsToIndented8SpacesPublicClassDeclaration()
         {
             var classDecl =
@@ -54,7 +54,7 @@ namespace GenerateDocumentationCommentsTests
 
             Assert.Equal(expected, result.ToFullString());
         }
-        */
+
         [Fact]
         public void ShouldAddSummaryDocCommentsToIndentedNoSpacesPublicClassDeclaration()
         {
@@ -78,7 +78,7 @@ public class Class1
 
             Assert.Equal(expected, result.ToFullString());
         }
-/*
+
         [Fact]
         public void ShouldAddSummaryDocCommentsToIndented4SpacesProtectedClassDeclaration()
         {
@@ -168,7 +168,7 @@ public class Class1
 
             Assert.Equal(expected, result.ToFullString());
         }
-
+/*
         [Fact]
         public void ShouldNotAddSummaryDocCommentsClassDeclarationWithSummaryComments()
         {
@@ -214,7 +214,8 @@ public class Class1
             var result = rewriter.VisitClassDeclaration(classDeclSyntax);
 
             Assert.Equal(expected, result.ToFullString());
-        }
+        }*/
+
         [Fact]
         public void ShouldChangeSummaryDocCommentsToBeginAtClassDeclarationColumn()
         {
@@ -240,7 +241,6 @@ public class Class1
             var result = rewriter.VisitClassDeclaration(classDeclSyntax);
 
             Assert.Equal(expected, result.ToFullString());
-        }*/
-
+        }
     }
 }
