@@ -15,7 +15,7 @@ namespace GenerateDocumentationComments
 
         internal BaseDocumentationComment(string startEndTag = "", string docCommentExterior = null)
         {
-            commentExterior = docCommentExterior;
+            CommentExterior = docCommentExterior;
             tag = startEndTag;
         }
 
@@ -31,7 +31,10 @@ namespace GenerateDocumentationComments
 
         internal List<Node> nodes = new List<Node>();
 
-        private string commentExterior;
+        internal string CommentExterior
+        {
+            get;
+        }
         private string tag;
     }
 
@@ -41,16 +44,16 @@ namespace GenerateDocumentationComments
             : base("summary", docCommentExterior)
         {
             TextNode tNode = new TextNode();
-            TextLiteralToken exteriorLiteral = new TextLiteralToken(" ", "///");
+            TextLiteralToken exteriorLiteral = new TextLiteralToken(" ", CommentExterior);
             tNode.AddToken(exteriorLiteral);
             AddNode(tNode);
 
             TextElementNode eltNode = new TextElementNode("summary");
             eltNode.AddToken(new NewLineToken());
-            TextLiteralToken literalToken = new TextLiteralToken(" ", "///");
+            TextLiteralToken literalToken = new TextLiteralToken(" ", CommentExterior);
             eltNode.AddToken(literalToken);
             eltNode.AddToken(new NewLineToken());
-            TextLiteralToken secondLiteralToken = new TextLiteralToken(" ", "///");
+            TextLiteralToken secondLiteralToken = new TextLiteralToken(" ", CommentExterior);
             eltNode.AddToken(secondLiteralToken);
             AddNode(eltNode);
 

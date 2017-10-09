@@ -8,14 +8,21 @@ namespace GenerateDocumentationComments
 {
     internal class DocumentationComments
     {
-        internal DocumentationComments()
+        const string commentDelimiter = "///";
+
+        internal DocumentationComments(SyntaxTriviaList leadingTrivia)
         {
-            summaryComment = new SummaryDocumentationComment("///");
+            lastLeadingTrivia = leadingTrivia.LastOrDefault();
+            string delimiter = lastLeadingTrivia.ToFullString() + commentDelimiter;
+            summaryComment = new SummaryDocumentationComment(delimiter);
         }
 
         internal SyntaxTrivia CreateCommentsTrivia()
         {
             List<XmlNodeSyntax> docComments = summaryComment.CreateListOfNodeSyntaxes();
+            var indent = new TextNode();
+            indent.AddToken(new TextLiteralToken(lastLeadingTrivia.ToFullString(), ""));
+            docComments.Add(indent.CreateSyntaxToken());
             XmlNodeSyntax[] nodes = docComments.ToArray();
 
             return SyntaxFactory.Trivia(
@@ -25,6 +32,7 @@ namespace GenerateDocumentationComments
         }
 
         private BaseDocumentationComment summaryComment;
+        private SyntaxTrivia lastLeadingTrivia;
     }
     /*        public DocumentationComments(SyntaxTriviaList leadingTrivia,
                 string summaryDocComment = "")

@@ -7,7 +7,7 @@ namespace GenerateDocumentationCommentsTests
 {
     public class GenerateDocumentationClassDeclarationTests
     {
-/*        [Fact]
+        [Fact]
         public void ShouldAddSummaryDocCommentsToIndented4SpacesPublicClassDeclaration()
         {
             var classDecl =
@@ -31,7 +31,7 @@ namespace GenerateDocumentationCommentsTests
             Assert.Equal(expected, result.ToFullString());
         }
 
-        [Fact]
+/*        [Fact]
         public void ShouldAddSummaryDocCommentsToIndented8SpacesPublicClassDeclaration()
         {
             var classDecl =
