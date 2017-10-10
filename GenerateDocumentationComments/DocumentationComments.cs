@@ -19,10 +19,13 @@ namespace GenerateDocumentationComments
 
         internal SyntaxTrivia CreateCommentsTrivia()
         {
-            List<XmlNodeSyntax> docComments = summaryComment.CreateListOfNodeSyntaxes();
-            var indent = new TextNode();
-            indent.AddToken(new TextLiteralToken(lastLeadingTrivia.ToFullString(), ""));
-            docComments.Add(indent.CreateSyntaxToken());
+            var textLiteralToken = BaseDocumentationComment.CreateLiteralToken(lastLeadingTrivia.ToFullString(), "");
+            var textTokens = SyntaxFactory.TokenList();
+            textTokens = textTokens.Add(textLiteralToken);
+            var indentNode = BaseDocumentationComment.CreateTextNode(textTokens);
+
+            var docComments = summaryComment.NodeList;
+            docComments = docComments.Add(indentNode);
             XmlNodeSyntax[] nodes = docComments.ToArray();
 
             return SyntaxFactory.Trivia(
