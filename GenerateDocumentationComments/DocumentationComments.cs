@@ -35,12 +35,12 @@ namespace GenerateDocumentationComments
         {
             SyntaxList<XmlNodeSyntax> comments = SyntaxFactory.List<XmlNodeSyntax>();
             var textTokens = SyntaxFactory.TokenList();
-            var textLiteralToken = BaseDocumentationComment.CreateLiteralToken(lastLeadingTrivia.ToFullString(), "");
-            textTokens = textTokens.Add(textLiteralToken);
+            var textLiteralToken = new LiteralTextToken(lastLeadingTrivia.ToFullString());
+            textTokens = textTokens.Add(textLiteralToken.CreateXmlToken(""));
             var indentNode = BaseDocumentationComment.CreateTextNode(textTokens);
 
-            var firstTextToken = BaseDocumentationComment.CreateLiteralToken(" ", commentDelimiter);
-            textTokens = textTokens.Add(firstTextToken);
+            var firstTextToken = new LiteralTextToken(" ");
+            textTokens = textTokens.Add(firstTextToken.CreateXmlToken(commentDelimiter));
             var textNode = BaseDocumentationComment.CreateTextNode(textTokens);
             comments = comments.Add(textNode);
             var summaryComments = summaryComment.CreateXmlNodes(docCommentDelimiter);
