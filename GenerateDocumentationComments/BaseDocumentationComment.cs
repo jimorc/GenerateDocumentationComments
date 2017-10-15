@@ -23,6 +23,7 @@ namespace GenerateDocumentationComments
         }
 
         protected List<Node> nodes = new List<Node>();
+        internal List<Node> Nodes { get => nodes; }
 
 
     }
@@ -37,7 +38,7 @@ namespace GenerateDocumentationComments
                 var textNodes = summaryElement.ChildNodes();
                 string startTag = string.Empty;
                 string endTag = string.Empty;
-                var tNode = new TextNode();
+                var tNode = new TextNode(docCommentExterior);
                 foreach (var textNode in textNodes)
                 {
                     switch (textNode.Kind())
@@ -61,7 +62,7 @@ namespace GenerateDocumentationComments
                             }
                             break;
                         case SyntaxKind.XmlText:
-                            tNode = new TextNode();
+                            tNode = new TextNode(docCommentExterior);
                             foreach (var token in textNode.ChildTokens())
                             {
                                 switch (token.Kind())
@@ -83,7 +84,7 @@ namespace GenerateDocumentationComments
                             break;
                     }
                 }
-                var elt = new ExampleElementNode();
+                var elt = new ExampleElementNode(docCommentExterior);
                 elt.AddNode(tNode);
                 if(!String.IsNullOrEmpty(startTag))
                 {
@@ -103,13 +104,13 @@ namespace GenerateDocumentationComments
                 var secondNewLineToken = new NewlineToken();
                 var secondTextLiteral = new LiteralTextToken(" ");
 
-                var elementTextNode = new TextNode();
+                var elementTextNode = new TextNode(docCommentExterior);
                 elementTextNode.AddToken(firstNewlineToken);
                 elementTextNode.AddToken(firstPartSummaryComment);
                 elementTextNode.AddToken(secondNewLineToken);
                 elementTextNode.AddToken(secondTextLiteral);
 
-                var exampleElementNode = new ExampleElementNode();
+                var exampleElementNode = new ExampleElementNode(docCommentExterior);
                 exampleElementNode.AddNode(elementTextNode);
                 var tagName = "summary";
                 exampleElementNode.StartTag = new StartTag(tagName);
@@ -123,7 +124,7 @@ namespace GenerateDocumentationComments
             var xmlNodes = SyntaxFactory.List<XmlNodeSyntax>();
             foreach(var node in nodes)
             {
-                xmlNodes = xmlNodes.Add(node.CreateXmlNode(commentDelimiter));
+                xmlNodes = xmlNodes.Add(node.CreateXmlNode());
             }
             return xmlNodes;
         }

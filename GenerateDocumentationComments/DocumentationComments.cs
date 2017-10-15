@@ -33,25 +33,24 @@ namespace GenerateDocumentationComments
 
         internal SyntaxTrivia CreateCommentsTrivia()
         {
-            SyntaxList<XmlNodeSyntax> comments = SyntaxFactory.List<XmlNodeSyntax>();
+            var comments = new Nodes();
             var textLiteralToken = new LiteralTextToken(lastLeadingTrivia.ToFullString());
-            var indentNode = new TextNode();
+            var indentNode = new TextNode("");
             indentNode.AddToken(textLiteralToken);
 
             var firstTextToken = new LiteralTextToken(" ");
-            var textNode = new TextNode();
+            var textNode = new TextNode(docCommentDelimiter);
             textNode.AddToken(firstTextToken);
-            comments = comments.Add(textNode.CreateXmlNode(docCommentDelimiter));
-            var summaryComments = summaryComment.CreateXmlNodes(docCommentDelimiter);
-            comments = comments.AddRange(summaryComments);
+            comments.AddNode(textNode);
+            comments.AddNodesRange(summaryComment.Nodes);
 
             var lastNewlineToken = new NewlineToken();
-            var lastTextNode = new TextNode();
+            var lastTextNode = new TextNode(docCommentDelimiter);
             lastTextNode.AddToken(lastNewlineToken);
-            comments = comments.Add(lastTextNode.CreateXmlNode(docCommentDelimiter));
+            comments.AddNode(lastTextNode);
 
-            comments = comments.Add(indentNode.CreateXmlNode(""));
-            XmlNodeSyntax[] nodes = comments.ToArray();
+            comments.AddNode(indentNode);
+            XmlNodeSyntax[] nodes = comments.CreateXmlNodes();
 
             return SyntaxFactory.Trivia(
                 SyntaxFactory.DocumentationCommentTrivia(
