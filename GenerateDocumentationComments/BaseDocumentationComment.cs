@@ -20,15 +20,6 @@ namespace GenerateDocumentationComments
 //        internal BaseDocumentationComment(string startEndTag = "", string docCommentExterior = null)
 //        { }
 
-        internal static SyntaxToken CreateNewlineToken(string docCommentExterior)
-        {
-            return SyntaxFactory.XmlTextNewLine(
-                SyntaxFactory.TriviaList(),
-                Environment.NewLine,
-                Environment.NewLine,
-                SyntaxFactory.TriviaList());
-        }
-
         internal static XmlNodeSyntax CreateTextNode(SyntaxTokenList withTokens)
         {
             return SyntaxFactory.XmlText()

@@ -46,9 +46,9 @@ namespace GenerateDocumentationComments
             var summaryComments = summaryComment.CreateXmlNodes(docCommentDelimiter);
             comments = comments.AddRange(summaryComments);
 
-            var lastNewlineToken = BaseDocumentationComment.CreateNewlineToken(docCommentDelimiter);
+            var lastNewlineToken = new NewlineToken();
             var lastTextTokens = SyntaxFactory.TokenList();
-            lastTextTokens = lastTextTokens.Add(lastNewlineToken);
+            lastTextTokens = lastTextTokens.Add(lastNewlineToken.CreateXmlToken(docCommentDelimiter));
             var lastTextNode = BaseDocumentationComment.CreateTextNode(lastTextTokens);
             comments = comments.Add(lastTextNode);
 
