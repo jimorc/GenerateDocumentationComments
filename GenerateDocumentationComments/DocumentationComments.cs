@@ -13,20 +13,47 @@ namespace GenerateDocumentationComments
         internal DocumentationComments(SyntaxTriviaList leadingTrivia)
         {
             lastLeadingTrivia = leadingTrivia.LastOrDefault();
-            string delimiter = lastLeadingTrivia.ToFullString() + commentDelimiter;
-            summaryComment = new SummaryDocumentationComment(delimiter);
+            docCommentDelimiter = lastLeadingTrivia.ToFullString() + commentDelimiter;
+
+            XmlElementSyntax summaryElement = null;
+            var xmlTrivia = leadingTrivia.Select(i => i.GetStructure())
+                .OfType<DocumentationCommentTriviaSyntax>()
+                .FirstOrDefault();
+            if (xmlTrivia != null)
+            {
+                var elementTriviaList = xmlTrivia.ChildNodes()
+                    .Select(i => i)
+                    .OfType<XmlElementSyntax>();
+                summaryElement = elementTriviaList
+                    .Where(t => t.StartTag.Name.ToString().Equals("summary"))
+                    .FirstOrDefault();
+            }
+            summaryComment = new SummaryDocumentationComment(summaryElement, docCommentDelimiter);
         }
 
         internal SyntaxTrivia CreateCommentsTrivia()
         {
-            var textLiteralToken = BaseDocumentationComment.CreateLiteralToken(lastLeadingTrivia.ToFullString(), "");
+            SyntaxList<XmlNodeSyntax> comments = SyntaxFactory.List<XmlNodeSyntax>();
             var textTokens = SyntaxFactory.TokenList();
+            var textLiteralToken = BaseDocumentationComment.CreateLiteralToken(lastLeadingTrivia.ToFullString(), "");
             textTokens = textTokens.Add(textLiteralToken);
             var indentNode = BaseDocumentationComment.CreateTextNode(textTokens);
 
-            var docComments = summaryComment.NodeList;
-            docComments = docComments.Add(indentNode);
-            XmlNodeSyntax[] nodes = docComments.ToArray();
+            var firstTextToken = BaseDocumentationComment.CreateLiteralToken(" ", commentDelimiter);
+            textTokens = textTokens.Add(firstTextToken);
+            var textNode = BaseDocumentationComment.CreateTextNode(textTokens);
+            comments = comments.Add(textNode);
+            var summaryComments = summaryComment.CreateXmlNodes(docCommentDelimiter);
+            comments = comments.AddRange(summaryComments);
+
+            var lastNewlineToken = BaseDocumentationComment.CreateNewlineToken(docCommentDelimiter);
+            var lastTextTokens = SyntaxFactory.TokenList();
+            lastTextTokens = lastTextTokens.Add(lastNewlineToken);
+            var lastTextNode = BaseDocumentationComment.CreateTextNode(lastTextTokens);
+            comments = comments.Add(lastTextNode);
+
+            comments = comments.Add(indentNode);
+            XmlNodeSyntax[] nodes = comments.ToArray();
 
             return SyntaxFactory.Trivia(
                 SyntaxFactory.DocumentationCommentTrivia(
@@ -36,84 +63,6 @@ namespace GenerateDocumentationComments
 
         private BaseDocumentationComment summaryComment;
         private SyntaxTrivia lastLeadingTrivia;
+        private string docCommentDelimiter;
     }
-    /*        public DocumentationComments(SyntaxTriviaList leadingTrivia,
-                string summaryDocComment = "")
-            {
-                initialLeadingTrivia = leadingTrivia;
-                var xmlTrivia = leadingTrivia
-                    .Select(i => i.GetStructure())
-                    .OfType<DocumentationCommentTriviaSyntax>()
-                    .FirstOrDefault();
-                CreateSummaryDocumentationComment(xmlTrivia, summaryDocComment);
-            }
-
-            private void CreateSummaryDocumentationComment(
-                        DocumentationCommentTriviaSyntax xmlTrivia,
-                        string summaryDocComment)
-            {
-                if(xmlTrivia != null)
-                { 
-                    var sumTrivia = xmlTrivia.ChildNodes()
-                        .Select(i => i)
-                        .OfType<XmlElementSyntax>();
-                    var summaryTrivia = sumTrivia
-                        .Where(t => t.StartTag.Name.ToString().Equals("summary"))
-                        .FirstOrDefault();
-                    var sumComment = summaryTrivia.ChildNodes()
-                        .OfType<XmlTextSyntax>().FirstOrDefault();
-                    var literalToken = sumComment.ChildTokens()
-                        .Where(t => t.IsKind(SyntaxKind.XmlTextLiteralToken))
-                        .FirstOrDefault();
-                    summaryComment = BaseDocumentationComment.CreateDocumentationComment(
-                        BaseDocumentationComment.CommentType.Summary,
-                        literalToken.Text.TrimStart());
-                }
-                else
-                {
-                    summaryComment = BaseDocumentationComment.CreateDocumentationComment(
-                        BaseDocumentationComment.CommentType.Summary, summaryDocComment);
-                }
-            }
-
-            internal SyntaxTriviaList GenerateLeadingTrivia()
-            {
-                SyntaxTriviaList initialTriviaList = GenerateInitialLeadingTrivia();
-                SyntaxTriviaList leadingTriviaList = initialTriviaList;
-                initialTriviaList = initialTriviaList.Add(
-                    SyntaxFactory.DocumentationCommentExterior("/// "));
-
-                leadingTriviaList = initialTriviaList.Add(
-                    summaryComment.GenerateXmlComment(initialTriviaList));
-                return leadingTriviaList;
-            }
-
-            private SyntaxTriviaList GenerateInitialLeadingTrivia()
-            {
-                SyntaxTriviaList leadingTriviaList = new SyntaxTriviaList();
-                if (initialLeadingTrivia.Count() > 0)
-                {
-                    var lastLeadingTrivia = initialLeadingTrivia.Last();
-                    if (lastLeadingTrivia.IsKind(SyntaxKind.WhitespaceTrivia))
-                    {
-                        leadingTriviaList = leadingTriviaList.Add(lastLeadingTrivia);
-                    }
-                    for (int i = 1; i < initialLeadingTrivia.Count(); ++i)
-                    {
-                        if (!initialLeadingTrivia[i].IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)
-                            && !initialLeadingTrivia[i].IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))
-                        {
-                            leadingTriviaList = leadingTriviaList.Add(initialLeadingTrivia[i]);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-                return leadingTriviaList;
-            }
-    private SyntaxTriviaList initialLeadingTrivia;
-
-        }*/
 }

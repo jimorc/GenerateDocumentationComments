@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace GenerateDocumentationComments
 {
-    internal class BaseDocumentationComment
+    internal abstract class BaseDocumentationComment
     {
         public enum CommentType
         {
             Summary,
             Parameter
         }
+
+        internal abstract SyntaxList<XmlNodeSyntax> CreateXmlNodes(string commentDelimiter);
 
 //        internal BaseDocumentationComment(string startEndTag = "", string docCommentExterior = null)
 //        { }
@@ -27,7 +30,7 @@ namespace GenerateDocumentationComments
                 SyntaxFactory.TriviaList());
         }
 
-        protected static SyntaxToken CreateNewlineToken(string docCommentExterior)
+        internal static SyntaxToken CreateNewlineToken(string docCommentExterior)
         {
             return SyntaxFactory.XmlTextNewLine(
                 SyntaxFactory.TriviaList(),
@@ -42,7 +45,7 @@ namespace GenerateDocumentationComments
                 .WithTextTokens(withTokens);
         }
 
-        protected static XmlElementSyntax CreateExampleElementNode(XmlNodeSyntax textNode)
+/*        protected static XmlElementSyntax CreateExampleElementNode(XmlNodeSyntax textNode)
         {
             return SyntaxFactory.XmlExampleElement(
                     SyntaxFactory.SingletonList<XmlNodeSyntax>(
@@ -66,169 +69,121 @@ namespace GenerateDocumentationComments
         protected void AddNode(XmlNodeSyntax node)
         {
             NodeList = NodeList.Add(node);
+        }*/
+
+        protected void AddNode(Node node)
+        {
+            nodes.Add(node);
         }
 
-        internal SyntaxList<XmlNodeSyntax> NodeList { get => nodeList; set => nodeList = value; }
+//        internal SyntaxList<XmlNodeSyntax> NodeList { get => nodeList; set => nodeList = value; }
 
-        private SyntaxList<XmlNodeSyntax> nodeList = SyntaxFactory.List<XmlNodeSyntax>();
+//        private SyntaxList<XmlNodeSyntax> nodeList = SyntaxFactory.List<XmlNodeSyntax>();
+
+        protected List<Node> nodes = new List<Node>();
+
+
     }
 
     internal class SummaryDocumentationComment : BaseDocumentationComment
     {
-        internal SummaryDocumentationComment(string docCommentExterior)
+        internal SummaryDocumentationComment(XmlElementSyntax summaryElement, string docCommentExterior)
         {
-            var textToken = CreateLiteralToken(" ", docCommentExterior);
-            var textTokens = SyntaxFactory.TokenList();
-            textTokens = textTokens.Add(textToken);
-            var textNode = CreateTextNode(textTokens);
+            if (summaryElement != null)
+            {
+                var newNodes = SyntaxFactory.List<SyntaxNode>();
+                var textNodes = summaryElement.ChildNodes();
+                string startTag = string.Empty;
+                string endTag = string.Empty;
+                var tNode = new TextNode();
+                foreach (var textNode in textNodes)
+                {
+                    switch (textNode.Kind())
+                    {
+                        case SyntaxKind.XmlElementStartTag:
+                            var xmlName = textNode.ChildNodes()
+                                .OfType<XmlNameSyntax>()
+                                .FirstOrDefault();
+                            if (xmlName != null)
+                            {
+                                startTag = xmlName.GetText().ToString();
+                            }
+                            break;
+                        case SyntaxKind.XmlElementEndTag:
+                            xmlName = textNode.ChildNodes()
+                                .OfType<XmlNameSyntax>()
+                                .FirstOrDefault();
+                            if (xmlName != null)
+                            {
+                                endTag = xmlName.GetText().ToString();
+                            }
+                            break;
+                        case SyntaxKind.XmlText:
+                            tNode = new TextNode();
+                            foreach (var token in textNode.ChildTokens())
+                            {
+                                switch (token.Kind())
+                                {
+                                    case SyntaxKind.XmlTextLiteralNewLineToken:
+                                        tNode.AddToken(new NewlineToken());
+                                        break;
+                                    case SyntaxKind.XmlTextLiteralToken:
+                                        var text = token.ValueText.ToString();
+                                        var textLiteralToken = new LiteralTextToken(text);
+                                        tNode.AddToken(textLiteralToken);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                var elt = new ExampleElementNode();
+                elt.AddNode(tNode);
+                if(!String.IsNullOrEmpty(startTag))
+                {
+                    elt.StartTag = new StartTag(startTag);
+                }
+                if(!String.IsNullOrEmpty(endTag))
+                {
+                    elt.EndTag = new EndTag(endTag);
+                }
+                AddNode(elt);
 
-            var firstNewlineToken = CreateNewlineToken(docCommentExterior);
-            var summaryTextToken = CreateLiteralToken(" ", docCommentExterior);
-            var secondNewlineToken = CreateNewlineToken(docCommentExterior);
-            var secondTextToken = CreateLiteralToken(" ", docCommentExterior);
-            var exampleElementTextTokens = SyntaxFactory.TokenList();
-            exampleElementTextTokens = exampleElementTextTokens.Add(firstNewlineToken);
-            exampleElementTextTokens = exampleElementTextTokens.Add(summaryTextToken);
-            exampleElementTextTokens = exampleElementTextTokens.Add(secondNewlineToken);
-            exampleElementTextTokens = exampleElementTextTokens.Add(secondTextToken);
-            var exampleTextNode = CreateTextNode(exampleElementTextTokens);
-            var exampleElementNode = CreateExampleElementNode(exampleTextNode)
-                .WithStartTag(CreateElementStartTag("summary"))
-                .WithEndTag(CreateElementEndTag("summary"));
+            }
+            else
+            {
+                var firstNewlineToken = new NewlineToken();
+                var firstPartSummaryComment = new LiteralTextToken(" ");
+                var secondNewLineToken = new NewlineToken();
+                var secondTextLiteral = new LiteralTextToken(" ");
 
+                var elementTextNode = new TextNode();
+                elementTextNode.AddToken(firstNewlineToken);
+                elementTextNode.AddToken(firstPartSummaryComment);
+                elementTextNode.AddToken(secondNewLineToken);
+                elementTextNode.AddToken(secondTextLiteral);
 
-            var lastNewlineToken = CreateNewlineToken(docCommentExterior);
-            var lastTextTokens = SyntaxFactory.TokenList();
-            lastTextTokens = lastTextTokens.Add(lastNewlineToken);
-            var lastTextNode = CreateTextNode(lastTextTokens);
-
-            AddNode(textNode);
-            AddNode(exampleElementNode);
-            AddNode(lastTextNode);
+                var exampleElementNode = new ExampleElementNode();
+                exampleElementNode.AddNode(elementTextNode);
+                var tagName = "summary";
+                exampleElementNode.StartTag = new StartTag(tagName);
+                exampleElementNode.EndTag = new EndTag(tagName);
+                AddNode(exampleElementNode);
+            }
         }
 
-        /*        protected BaseDocumentationComment(CommentType type, string text)
-                {
-                    Type = type;
-                    CommentText = text;
-                }
-
-                public static BaseDocumentationComment CreateDocumentationComment(
-                    CommentType type, string text = "")
-                {
-                    switch (type)
-                    {
-                        case CommentType.Summary:
-                            return new SummaryDocumentationComment(text);
-                        default:
-                            return new BaseDocumentationComment(type, text);
-
-                    }
-                }
-
-                internal virtual SyntaxTrivia GenerateXmlComment(
-                    SyntaxTriviaList leadingTrivia)
-                { return new SyntaxTrivia(); }
-
-                protected static SyntaxToken GenerateDocumentCommentLine(
-                    SyntaxTriviaList leadingTriviaList,
-                    string docCommentText)
-                {
-                    var docCommentTriviaList = GenerateTriviaList(leadingTriviaList);
-                    var triviaLiteral = SyntaxFactory.XmlTextLiteral(
-                        docCommentTriviaList,
-                        docCommentText,
-                        docCommentText,
-                        SyntaxFactory.TriviaList());
-                    return triviaLiteral;
-                }
-
-                private static SyntaxTriviaList GenerateTriviaList(SyntaxTriviaList trivia)
-                {
-                    var triviaList = SyntaxFactory.TriviaList();
-                    foreach (var triv in trivia)
-                    {
-                        triviaList = triviaList.Add(triv);
-                    }
-                    return triviaList;
-                }
-
-                protected static XmlElementSyntax GenerateXmlExampleElement(
-                    SyntaxTriviaList leadingTrivia,
-                    string elementName,
-                    string elementText)
-                {
-                    return SyntaxFactory.XmlExampleElement(
-                        SyntaxFactory.SingletonList<XmlNodeSyntax>(
-                            SyntaxFactory.XmlText()
-                            .WithTextTokens(
-                                SyntaxFactory.TokenList(
-                                    new[]{
-                            GenerateXmlNewLineTrivia(),
-                            GenerateDocumentCommentLine(leadingTrivia, elementText),
-                            GenerateXmlNewLineTrivia(),
-                            GenerateDocumentCommentLine(leadingTrivia, "") }))))
-                        .WithStartTag(
-                            GenerateXmlElementStartTag(elementName))
-                        .WithEndTag(
-                            GenerateXmlElementEndTag(elementName));
-                }
-
-                protected static SyntaxToken GenerateXmlNewLineTrivia()
-                {
-                    return SyntaxFactory.XmlTextNewLine(
-                        SyntaxFactory.TriviaList(),
-                        System.Environment.NewLine,
-                        System.Environment.NewLine,
-                        SyntaxFactory.TriviaList());
-                }
-
-                private static XmlElementEndTagSyntax GenerateXmlElementEndTag(string eltName)
-                {
-                    return SyntaxFactory.XmlElementEndTag(
-                        SyntaxFactory.XmlName(
-                            SyntaxFactory.Identifier(eltName)));
-                }
-
-                private static XmlElementStartTagSyntax GenerateXmlElementStartTag(string eltName)
-                {
-                    return SyntaxFactory.XmlElementStartTag(
-                                   SyntaxFactory.XmlName(
-                                       SyntaxFactory.Identifier(eltName)));
-                }
-
-                public CommentType Type {
-                    get;
-                    private set;
-                }
-
-                public string CommentText
-                {
-                    get;
-                    set;
-                }
-            }
-
-            internal class SummaryDocumentationComment : BaseDocumentationComment
+        internal override SyntaxList<XmlNodeSyntax> CreateXmlNodes(string commentDelimiter)
+        {
+            var xmlNodes = SyntaxFactory.List<XmlNodeSyntax>();
+            foreach(var node in nodes)
             {
-                internal SummaryDocumentationComment(string text)
-                : base(CommentType.Summary, text)
-                    { }
-
-                internal override SyntaxTrivia GenerateXmlComment(
-                    SyntaxTriviaList leadingTrivia)
-                {
-                    var summaryDocumentation = SyntaxFactory.DocumentationCommentTrivia(
-                            SyntaxKind.SingleLineDocumentationCommentTrivia,
-                            SyntaxFactory.List<XmlNodeSyntax>(
-                                new XmlNodeSyntax[]{
-                                    GenerateXmlExampleElement(leadingTrivia, "summary", CommentText),
-                                    SyntaxFactory.XmlText()
-                                    .WithTextTokens(
-                                        SyntaxFactory.TokenList(
-                                            GenerateXmlNewLineTrivia())) }));
-                    return SyntaxFactory.Trivia(summaryDocumentation);
-                }
-            }*/
+                xmlNodes = xmlNodes.Add(node.CreateXmlNode(commentDelimiter));
+            }
+            return xmlNodes;
+        }
     }
 }

@@ -57,9 +57,12 @@
     <Compile Include="BaseDocumentationComment.cs" />
     <Compile Include="DocumentationComments.cs" />
     <Compile Include="DocumentCommentsRewriter.cs" />
+    <Compile Include="ElementTag.cs" />
     <Compile Include="GenerateDocumentationCommentsInEditor.cs" />
     <Compile Include="GenerateDocumentationCommentsInEditorPackage.cs" />
+    <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Token.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
