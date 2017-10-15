@@ -168,7 +168,7 @@ public class Class1
 
             Assert.Equal(expected, result.ToFullString());
         }
-/*
+
         [Fact]
         public void ShouldNotAddSummaryDocCommentsClassDeclarationWithSummaryComments()
         {
@@ -188,7 +188,7 @@ public class Class1
 
             Assert.Equal(classDecl, result.ToFullString());
         }
-
+/*
         [Fact]
         public void ShouldNotAddSummaryDocCommentsClassDeclarationWithMultilineSummaryComments()
         {
