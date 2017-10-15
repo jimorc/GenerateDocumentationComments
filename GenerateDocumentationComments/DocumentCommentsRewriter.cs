@@ -27,15 +27,6 @@ namespace GenerateDocumentationComments
                 var docComments = new DocumentationComments(node.GetLeadingTrivia());
                 var leadingTrivia = docComments.CreateCommentsTrivia();
                 node = node.WithLeadingTrivia(leadingTrivia);
-/*                DocumentationComments comments = new DocumentationComments(
-                    node.GetLeadingTrivia());
-                var leadingTrivia = comments.GenerateLeadingTrivia();
-                var initialLeadingTrivia = accessModifier.LeadingTrivia.LastOrDefault();
-                if (!initialLeadingTrivia.IsKind(SyntaxKind.None))
-                {
-                    leadingTrivia = leadingTrivia.Add(initialLeadingTrivia);
-                }
-                node = node.WithLeadingTrivia(leadingTrivia);*/
             }
             return base.VisitClassDeclaration(node);
         }
