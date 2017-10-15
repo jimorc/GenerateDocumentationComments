@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -25,10 +21,6 @@ namespace GenerateDocumentationComments
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <seealso cref="GenerateDocumentationComments.Token" />
     internal class LiteralTextToken : Token
     {
         internal LiteralTextToken(string literalText)
