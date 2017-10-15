@@ -34,25 +34,23 @@ namespace GenerateDocumentationComments
         internal SyntaxTrivia CreateCommentsTrivia()
         {
             SyntaxList<XmlNodeSyntax> comments = SyntaxFactory.List<XmlNodeSyntax>();
-            var textTokens = SyntaxFactory.TokenList();
             var textLiteralToken = new LiteralTextToken(lastLeadingTrivia.ToFullString());
-            textTokens = textTokens.Add(textLiteralToken.CreateXmlToken(""));
-            var indentNode = BaseDocumentationComment.CreateTextNode(textTokens);
+            var indentNode = new TextNode();
+            indentNode.AddToken(textLiteralToken);
 
             var firstTextToken = new LiteralTextToken(" ");
-            textTokens = textTokens.Add(firstTextToken.CreateXmlToken(commentDelimiter));
-            var textNode = BaseDocumentationComment.CreateTextNode(textTokens);
-            comments = comments.Add(textNode);
+            var textNode = new TextNode();
+            textNode.AddToken(firstTextToken);
+            comments = comments.Add(textNode.CreateXmlNode(docCommentDelimiter));
             var summaryComments = summaryComment.CreateXmlNodes(docCommentDelimiter);
             comments = comments.AddRange(summaryComments);
 
             var lastNewlineToken = new NewlineToken();
-            var lastTextTokens = SyntaxFactory.TokenList();
-            lastTextTokens = lastTextTokens.Add(lastNewlineToken.CreateXmlToken(docCommentDelimiter));
-            var lastTextNode = BaseDocumentationComment.CreateTextNode(lastTextTokens);
-            comments = comments.Add(lastTextNode);
+            var lastTextNode = new TextNode();
+            lastTextNode.AddToken(lastNewlineToken);
+            comments = comments.Add(lastTextNode.CreateXmlNode(docCommentDelimiter));
 
-            comments = comments.Add(indentNode);
+            comments = comments.Add(indentNode.CreateXmlNode(""));
             XmlNodeSyntax[] nodes = comments.ToArray();
 
             return SyntaxFactory.Trivia(

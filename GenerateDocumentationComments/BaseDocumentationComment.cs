@@ -17,49 +17,10 @@ namespace GenerateDocumentationComments
 
         internal abstract SyntaxList<XmlNodeSyntax> CreateXmlNodes(string commentDelimiter);
 
-//        internal BaseDocumentationComment(string startEndTag = "", string docCommentExterior = null)
-//        { }
-
-        internal static XmlNodeSyntax CreateTextNode(SyntaxTokenList withTokens)
-        {
-            return SyntaxFactory.XmlText()
-                .WithTextTokens(withTokens);
-        }
-
-/*        protected static XmlElementSyntax CreateExampleElementNode(XmlNodeSyntax textNode)
-        {
-            return SyntaxFactory.XmlExampleElement(
-                    SyntaxFactory.SingletonList<XmlNodeSyntax>(
-                        textNode));
-        }
-
-        protected static XmlElementStartTagSyntax CreateElementStartTag(string identifier)
-        {
-            return SyntaxFactory.XmlElementStartTag(
-                SyntaxFactory.XmlName(
-                    SyntaxFactory.Identifier(identifier)));
-        }
-
-        protected static XmlElementEndTagSyntax CreateElementEndTag(string identifier)
-        {
-            return SyntaxFactory.XmlElementEndTag(
-                SyntaxFactory.XmlName(
-                    SyntaxFactory.Identifier(identifier)));
-        }
-
-        protected void AddNode(XmlNodeSyntax node)
-        {
-            NodeList = NodeList.Add(node);
-        }*/
-
         protected void AddNode(Node node)
         {
             nodes.Add(node);
         }
-
-//        internal SyntaxList<XmlNodeSyntax> NodeList { get => nodeList; set => nodeList = value; }
-
-//        private SyntaxList<XmlNodeSyntax> nodeList = SyntaxFactory.List<XmlNodeSyntax>();
 
         protected List<Node> nodes = new List<Node>();
 
