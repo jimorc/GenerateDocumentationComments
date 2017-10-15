@@ -20,16 +20,6 @@ namespace GenerateDocumentationComments
 //        internal BaseDocumentationComment(string startEndTag = "", string docCommentExterior = null)
 //        { }
 
-/*        internal static SyntaxToken CreateLiteralToken(string literalText, string docCommentExterior)
-        {
-            return SyntaxFactory.XmlTextLiteral(
-                SyntaxFactory.TriviaList(
-                    SyntaxFactory.DocumentationCommentExterior(docCommentExterior)),
-                literalText,
-                literalText,
-                SyntaxFactory.TriviaList());
-        }*/
-
         internal static SyntaxToken CreateNewlineToken(string docCommentExterior)
         {
             return SyntaxFactory.XmlTextNewLine(
