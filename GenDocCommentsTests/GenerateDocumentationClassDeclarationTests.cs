@@ -188,14 +188,15 @@ public class Class1
 
             Assert.Equal(classDecl, result.ToFullString());
         }
-/*
+
         [Fact]
         public void ShouldNotAddSummaryDocCommentsClassDeclarationWithMultilineSummaryComments()
         {
             var classDecl =
-//@"        /** <summary>
-         A summary description
-//         </summary> 
+@"        /** <summary>
+         * A summary description
+         * </summary> 
+         **/
         public class Class1
         {
         }";
@@ -214,7 +215,7 @@ public class Class1
             var result = rewriter.VisitClassDeclaration(classDeclSyntax);
 
             Assert.Equal(expected, result.ToFullString());
-        }*/
+        }
 
         [Fact]
         public void ShouldChangeSummaryDocCommentsToBeginAtClassDeclarationColumn()
