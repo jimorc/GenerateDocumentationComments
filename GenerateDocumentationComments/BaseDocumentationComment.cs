@@ -113,6 +113,19 @@ namespace GenerateDocumentationComments
             }
             return xmlNodes;
         }
+
+        protected void AddExampleElementNode(Node[] nodes, string docCommentExterior)
+        {
+            var exampleElementNode = new ExampleElementNode(docCommentExterior);
+            foreach (var node in nodes)
+            {
+                exampleElementNode.AddNode(node);
+            }
+            var tagName = "summary";
+            exampleElementNode.StartTag = new StartTag(tagName);
+            exampleElementNode.EndTag = new EndTag(tagName);
+            AddNode(exampleElementNode);
+        }
     }
 
     internal class ClassSummaryDocumentationComment : SummaryDocumentationComment
@@ -133,12 +146,8 @@ namespace GenerateDocumentationComments
             elementTextNode.AddToken(secondNewLineToken);
             elementTextNode.AddToken(secondTextLiteral);
 
-            var exampleElementNode = new ExampleElementNode(docCommentExterior);
-            exampleElementNode.AddNode(elementTextNode);
-            var tagName = "summary";
-            exampleElementNode.StartTag = new StartTag(tagName);
-            exampleElementNode.EndTag = new EndTag(tagName);
-            AddNode(exampleElementNode);
+            Node[] nodes = { elementTextNode };
+            AddExampleElementNode(nodes, docCommentExterior);
         }
     }
 
@@ -167,19 +176,6 @@ namespace GenerateDocumentationComments
 
             Node[] nodes = { firstTextNode, cref, secondTextNode };
             AddExampleElementNode(nodes, docCommentExterior);
-        }
-
-        private void AddExampleElementNode(Node[] nodes, string docCommentExterior)
-        {
-            var exampleElementNode = new ExampleElementNode(docCommentExterior);
-            foreach(var node in nodes)
-            {
-                exampleElementNode.AddNode(node);
-            }
-            var tagName = "summary";
-            exampleElementNode.StartTag = new StartTag(tagName);
-            exampleElementNode.EndTag = new EndTag(tagName);
-            AddNode(exampleElementNode);
         }
     }
 }
