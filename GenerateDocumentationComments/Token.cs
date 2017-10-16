@@ -39,4 +39,22 @@ namespace GenerateDocumentationComments
         }
         private string text;
     }
+
+    internal class LiteralTextTokenWithNoDocCommentExterior : Token
+    {
+        internal LiteralTextTokenWithNoDocCommentExterior(string literalText)
+        {
+            text = literalText;
+        }
+
+        internal override SyntaxToken CreateXmlToken(string docCommentExterior)
+        {
+            return SyntaxFactory.XmlTextLiteral(
+                SyntaxFactory.TriviaList(),
+                text,
+                text,
+                SyntaxFactory.TriviaList());
+        }
+        private string text;
+    }
 }

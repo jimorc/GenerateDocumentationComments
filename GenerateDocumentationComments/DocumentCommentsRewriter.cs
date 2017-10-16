@@ -22,9 +22,9 @@ namespace GenerateDocumentationComments
                     || m.IsKind(SyntaxKind.ProtectedKeyword)
                     || m.IsKind(SyntaxKind.InternalKeyword))
                 .FirstOrDefault();
-            if(!accessModifier.IsKind(SyntaxKind.None))
+            if (!accessModifier.IsKind(SyntaxKind.None))
             {
-                var docComments = new DocumentationComments(node.GetLeadingTrivia());
+                var docComments = new ClassDocumentationComments(node.GetLeadingTrivia());
                 var leadingTrivia = docComments.CreateCommentsTrivia();
                 node = node.WithLeadingTrivia(leadingTrivia);
             }
@@ -33,31 +33,18 @@ namespace GenerateDocumentationComments
 
         public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
-/*            var accessModifier = node.Modifiers
+            var accessModifier = node.Modifiers
                 .Where(m => m.IsKind(SyntaxKind.PublicKeyword)
                     || m.IsKind(SyntaxKind.ProtectedKeyword)
                     || m.IsKind(SyntaxKind.InternalKeyword))
                 .FirstOrDefault();
             if (accessModifier != null)
             {
-                var identifier = node.DescendantTokens()
-                     .Where(token => token.IsKind(SyntaxKind.IdentifierToken))
-                     .First();
-                string summary = string.Format(
-                    "Initializes a new instance of the <see cref=\"{0}\"/> class.",
-                    identifier.ValueText);
-
-                DocumentationComments comments = new DocumentationComments(
-                    node.GetLeadingTrivia(), summary);
-                var leadingTrivia = comments.GenerateLeadingTrivia();
-                var initialLeadingTrivia = accessModifier.LeadingTrivia.LastOrDefault();
-                if (!initialLeadingTrivia.IsKind(SyntaxKind.None))
-                {
-                    leadingTrivia = leadingTrivia.Add(initialLeadingTrivia);
-                }
+                var docComments = new ConstructorDocumentationComments(node.GetLeadingTrivia());
+                var leadingTrivia = docComments.CreateCommentsTrivia();
                 node = node.WithLeadingTrivia(leadingTrivia);
-            }*/
-            return base.VisitConstructorDeclaration(node);
+            }
+            return node;
         }
     }
 }

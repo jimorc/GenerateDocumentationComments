@@ -10,7 +10,7 @@ namespace GenerateDocumentationCommentsTests
     // method declarations rather than constructor declarations.
     public class GenerateDocumentationConstructorDeclarationTests
     {
-/*        [Fact]
+        [Fact]
         public void ShouldAddSummaryDocCommentsToConstructorDeclarationNoArguments()
         {
             var consDecl =
@@ -41,7 +41,7 @@ public class Class1
 
             Assert.Equal(expected, result.ToFullString());
         }
-
+/*
         [Fact]
         public void ShouldNotAddSummaryDocCommentsToConstructorDeclarationWithCommentsNoArguments()
         {

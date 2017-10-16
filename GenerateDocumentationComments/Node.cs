@@ -102,6 +102,27 @@ namespace GenerateDocumentationComments
         internal EndTag EndTag { get; set; }
     }
 
+    internal class CrefNode : Node
+    {
+        internal CrefNode(string crefName)
+            : base("")
+        {
+            name = crefName;
+        }
+
+        internal override XmlNodeSyntax CreateXmlNode()
+        {
+            return SyntaxFactory.XmlNullKeywordElement()
+                .WithAttributes(
+                SyntaxFactory.SingletonList<XmlAttributeSyntax>(
+                    SyntaxFactory.XmlCrefAttribute(
+                        SyntaxFactory.NameMemberCref(
+                            SyntaxFactory.IdentifierName(name)))));
+        }
+
+        private string name;
+    }
+
     internal class Nodes
     {
         internal XmlNodeSyntax[] CreateXmlNodes()

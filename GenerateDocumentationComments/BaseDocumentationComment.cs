@@ -16,6 +16,7 @@ namespace GenerateDocumentationComments
         }
 
         internal abstract SyntaxList<XmlNodeSyntax> CreateXmlNodes(string commentDelimiter);
+        internal abstract void CreateNewComment(string docCommentExterior);
 
         protected void AddNode(Node node)
         {
@@ -28,7 +29,7 @@ namespace GenerateDocumentationComments
 
     }
 
-    internal class SummaryDocumentationComment : BaseDocumentationComment
+    internal abstract class SummaryDocumentationComment : BaseDocumentationComment
     {
         internal SummaryDocumentationComment(XmlElementSyntax summaryElement, string docCommentExterior)
         {
@@ -86,11 +87,11 @@ namespace GenerateDocumentationComments
                 }
                 var elt = new ExampleElementNode(docCommentExterior);
                 elt.AddNode(tNode);
-                if(!String.IsNullOrEmpty(startTag))
+                if (!String.IsNullOrEmpty(startTag))
                 {
                     elt.StartTag = new StartTag(startTag);
                 }
-                if(!String.IsNullOrEmpty(endTag))
+                if (!String.IsNullOrEmpty(endTag))
                 {
                     elt.EndTag = new EndTag(endTag);
                 }
@@ -99,34 +100,86 @@ namespace GenerateDocumentationComments
             }
             else
             {
-                var firstNewlineToken = new NewlineToken();
-                var firstPartSummaryComment = new LiteralTextToken(" ");
-                var secondNewLineToken = new NewlineToken();
-                var secondTextLiteral = new LiteralTextToken(" ");
-
-                var elementTextNode = new TextNode(docCommentExterior);
-                elementTextNode.AddToken(firstNewlineToken);
-                elementTextNode.AddToken(firstPartSummaryComment);
-                elementTextNode.AddToken(secondNewLineToken);
-                elementTextNode.AddToken(secondTextLiteral);
-
-                var exampleElementNode = new ExampleElementNode(docCommentExterior);
-                exampleElementNode.AddNode(elementTextNode);
-                var tagName = "summary";
-                exampleElementNode.StartTag = new StartTag(tagName);
-                exampleElementNode.EndTag = new EndTag(tagName);
-                AddNode(exampleElementNode);
+                CreateNewComment(docCommentExterior);
             }
         }
 
         internal override SyntaxList<XmlNodeSyntax> CreateXmlNodes(string commentDelimiter)
         {
             var xmlNodes = SyntaxFactory.List<XmlNodeSyntax>();
-            foreach(var node in nodes)
+            foreach (var node in nodes)
             {
                 xmlNodes = xmlNodes.Add(node.CreateXmlNode());
             }
             return xmlNodes;
+        }
+    }
+
+    internal class ClassSummaryDocumentationComment : SummaryDocumentationComment
+    {
+        internal ClassSummaryDocumentationComment(XmlElementSyntax summaryElement, string docCommentExterior)
+            : base(summaryElement, docCommentExterior) { }
+
+        internal override void CreateNewComment(string docCommentExterior)
+        {
+            var firstNewlineToken = new NewlineToken();
+            var firstPartSummaryComment = new LiteralTextToken(" ");
+            var secondNewLineToken = new NewlineToken();
+            var secondTextLiteral = new LiteralTextToken(" ");
+
+            var elementTextNode = new TextNode(docCommentExterior);
+            elementTextNode.AddToken(firstNewlineToken);
+            elementTextNode.AddToken(firstPartSummaryComment);
+            elementTextNode.AddToken(secondNewLineToken);
+            elementTextNode.AddToken(secondTextLiteral);
+
+            var exampleElementNode = new ExampleElementNode(docCommentExterior);
+            exampleElementNode.AddNode(elementTextNode);
+            var tagName = "summary";
+            exampleElementNode.StartTag = new StartTag(tagName);
+            exampleElementNode.EndTag = new EndTag(tagName);
+            AddNode(exampleElementNode);
+        }
+    }
+
+    internal class ConstructorSummaryDocumentationComment : SummaryDocumentationComment
+    {
+        internal ConstructorSummaryDocumentationComment(XmlElementSyntax summaryElement, string docCommentExterior)
+            : base(summaryElement, docCommentExterior) { }
+
+        internal override void CreateNewComment(string docCommentExterior)
+        {
+            var firstNewlineToken = new NewlineToken();
+            var firstPartSummaryComment = new LiteralTextToken(" Initializes a new instance of the ");
+            var firstTextNode = new TextNode(docCommentExterior);
+            firstTextNode.AddToken(firstNewlineToken);
+            firstTextNode.AddToken(firstPartSummaryComment);
+
+            var cref = new CrefNode("Class1");
+
+            var secondPartSummaryComment = new LiteralTextTokenWithNoDocCommentExterior(" class.");
+            var secondNewlineToken = new NewlineToken();
+            var thirdPartSummaryComment = new LiteralTextToken(" ");
+            var secondTextNode = new TextNode(docCommentExterior);
+            secondTextNode.AddToken(secondPartSummaryComment);
+            secondTextNode.AddToken(secondNewlineToken);
+            secondTextNode.AddToken(thirdPartSummaryComment);
+
+            Node[] nodes = { firstTextNode, cref, secondTextNode };
+            AddExampleElementNode(nodes, docCommentExterior);
+        }
+
+        private void AddExampleElementNode(Node[] nodes, string docCommentExterior)
+        {
+            var exampleElementNode = new ExampleElementNode(docCommentExterior);
+            foreach(var node in nodes)
+            {
+                exampleElementNode.AddNode(node);
+            }
+            var tagName = "summary";
+            exampleElementNode.StartTag = new StartTag(tagName);
+            exampleElementNode.EndTag = new EndTag(tagName);
+            AddNode(exampleElementNode);
         }
     }
 }
