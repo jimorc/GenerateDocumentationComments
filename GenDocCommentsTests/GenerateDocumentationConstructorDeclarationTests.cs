@@ -11,7 +11,7 @@ namespace GenerateDocumentationCommentsTests
     public class GenerateDocumentationConstructorDeclarationTests
     {
         [Fact]
-        public void ShouldAddSummaryDocCommentsToConstructorDeclarationNoArguments()
+        public void ShouldAddSummaryDocCommentsToClass1ConstructorDeclarationNoArguments()
         {
             var consDecl =
     @"public class Class1
@@ -41,7 +41,41 @@ public class Class1
 
             Assert.Equal(expected, result.ToFullString());
         }
-/*
+
+
+        [Fact]
+        public void ShouldAddSummaryDocCommentsToClass2ConstructorDeclarationNoArguments()
+        {
+            var consDecl =
+    @"public class Class2
+{
+    public Class2()
+    {
+    }
+}";
+            var expected =
+                @"/// <summary>
+/// 
+/// </summary>
+public class Class2
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref=""Class2""/> class.
+    /// </summary>
+    public Class2()
+    {
+    }
+}";
+            var tree = CSharpSyntaxTree.ParseText(consDecl);
+            var rewriter = new GenerateDocumentationComments.DocumentCommentsRewriter();
+            var root = (CompilationUnitSyntax)tree.GetRoot();
+
+            var result = rewriter.Visit(root);
+
+            Assert.Equal(expected, result.ToFullString());
+        }
+        
+        /*
         [Fact]
         public void ShouldNotAddSummaryDocCommentsToConstructorDeclarationWithCommentsNoArguments()
         {

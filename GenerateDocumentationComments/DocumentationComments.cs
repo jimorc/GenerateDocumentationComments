@@ -7,9 +7,9 @@ namespace GenerateDocumentationComments
 {
     internal abstract class DocumentationComments
     {
-        internal DocumentationComments(SyntaxTriviaList leadingTrivia)
+        internal DocumentationComments(SyntaxNode nodeToDocument)
         {
-            lastLeadingTrivia = leadingTrivia.LastOrDefault();
+            lastLeadingTrivia = nodeToDocument.GetLeadingTrivia().LastOrDefault();
             docCommentDelimiter = lastLeadingTrivia.ToFullString() + DocumentationComments.commentDelimiter;
         }
 
@@ -20,23 +20,10 @@ namespace GenerateDocumentationComments
     }
     internal class ClassDocumentationComments : DocumentationComments
     {
-        internal ClassDocumentationComments(SyntaxTriviaList leadingTrivia)
-            : base(leadingTrivia)
+        internal ClassDocumentationComments(SyntaxNode nodeToDocument)
+            : base(nodeToDocument)
         {
-            XmlElementSyntax summaryElement = null;
-            var xmlTrivia = leadingTrivia.Select(i => i.GetStructure())
-                .OfType<DocumentationCommentTriviaSyntax>()
-                .FirstOrDefault();
-            if (xmlTrivia != null)
-            {
-                var elementTriviaList = xmlTrivia.ChildNodes()
-                    .Select(i => i)
-                    .OfType<XmlElementSyntax>();
-                summaryElement = elementTriviaList
-                    .Where(t => t.StartTag.Name.ToString().Equals("summary"))
-                    .FirstOrDefault();
-            }
-            summaryComment = new ClassSummaryDocumentationComment(summaryElement, docCommentDelimiter);
+            summaryComment = new ClassSummaryDocumentationComment(nodeToDocument, docCommentDelimiter);
         }
 
         internal SyntaxTrivia CreateCommentsTrivia()
@@ -71,23 +58,10 @@ namespace GenerateDocumentationComments
 
     internal class ConstructorDocumentationComments : DocumentationComments
     {
-        internal ConstructorDocumentationComments(SyntaxTriviaList leadingTrivia)
-            : base(leadingTrivia)
+        internal ConstructorDocumentationComments(SyntaxNode nodeToDocument)
+            : base(nodeToDocument)
         {
-            XmlElementSyntax summaryElement = null;
-            var xmlTrivia = leadingTrivia.Select(i => i.GetStructure())
-                .OfType<DocumentationCommentTriviaSyntax>()
-                .FirstOrDefault();
-            if (xmlTrivia != null)
-            {
-                var elementTriviaList = xmlTrivia.ChildNodes()
-                    .Select(i => i)
-                    .OfType<XmlElementSyntax>();
-                summaryElement = elementTriviaList
-                    .Where(t => t.StartTag.Name.ToString().Equals("summary"))
-                    .FirstOrDefault();
-            }
-            summaryComment = new ConstructorSummaryDocumentationComment(summaryElement, docCommentDelimiter);
+            summaryComment = new ConstructorSummaryDocumentationComment(nodeToDocument, docCommentDelimiter);
         }
 
         internal SyntaxTrivia CreateCommentsTrivia()

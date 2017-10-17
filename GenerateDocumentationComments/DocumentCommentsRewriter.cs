@@ -24,7 +24,7 @@ namespace GenerateDocumentationComments
                 .FirstOrDefault();
             if (!accessModifier.IsKind(SyntaxKind.None))
             {
-                var docComments = new ClassDocumentationComments(node.GetLeadingTrivia());
+                var docComments = new ClassDocumentationComments(node);
                 var leadingTrivia = docComments.CreateCommentsTrivia();
                 node = node.WithLeadingTrivia(leadingTrivia);
             }
@@ -40,7 +40,7 @@ namespace GenerateDocumentationComments
                 .FirstOrDefault();
             if (accessModifier != null)
             {
-                var docComments = new ConstructorDocumentationComments(node.GetLeadingTrivia());
+                var docComments = new ConstructorDocumentationComments(node);
                 var leadingTrivia = docComments.CreateCommentsTrivia();
                 node = node.WithLeadingTrivia(leadingTrivia);
             }

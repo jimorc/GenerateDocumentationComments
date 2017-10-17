@@ -15,8 +15,34 @@ namespace GenerateDocumentationComments
             Parameter
         }
 
+        internal BaseDocumentationComment(SyntaxNode nodeToDocument)
+        {
+            nodeBeingDocumented = nodeToDocument;
+        }
+
         internal abstract SyntaxList<XmlNodeSyntax> CreateXmlNodes(string commentDelimiter);
         internal abstract void CreateNewComment(string docCommentExterior);
+
+        protected XmlElementSyntax GetSummaryElement()
+        {
+            XmlElementSyntax summaryElement = null;
+            var xmlTriviaList = nodeBeingDocumented.GetLeadingTrivia().Select(i => i.GetStructure())
+                .OfType<DocumentationCommentTriviaSyntax>();
+            if(xmlTriviaList != null)
+            {
+                var xmlTrivia = xmlTriviaList.FirstOrDefault();
+                if (xmlTrivia != null)
+                {
+                    var elementTriviaList = xmlTrivia.ChildNodes()
+                        .Select(i => i)
+                        .OfType<XmlElementSyntax>();
+                    summaryElement = elementTriviaList
+                        .Where(t => t.StartTag.Name.ToString().Equals("summary"))
+                        .FirstOrDefault();
+                }
+            }
+            return summaryElement;
+        }
 
         protected void AddNode(Node node)
         {
@@ -26,13 +52,15 @@ namespace GenerateDocumentationComments
         protected List<Node> nodes = new List<Node>();
         internal List<Node> Nodes { get => nodes; }
 
-
+        protected SyntaxNode nodeBeingDocumented;
     }
 
     internal abstract class SummaryDocumentationComment : BaseDocumentationComment
     {
-        internal SummaryDocumentationComment(XmlElementSyntax summaryElement, string docCommentExterior)
+        internal SummaryDocumentationComment(SyntaxNode nodeToDocument, string docCommentExterior)
+            : base(nodeToDocument)
         {
+            var summaryElement = GetSummaryElement();
             if (summaryElement != null)
             {
                 var newNodes = SyntaxFactory.List<SyntaxNode>();
@@ -130,8 +158,8 @@ namespace GenerateDocumentationComments
 
     internal class ClassSummaryDocumentationComment : SummaryDocumentationComment
     {
-        internal ClassSummaryDocumentationComment(XmlElementSyntax summaryElement, string docCommentExterior)
-            : base(summaryElement, docCommentExterior) { }
+        internal ClassSummaryDocumentationComment(SyntaxNode nodeToDocument, string docCommentExterior)
+            : base(nodeToDocument, docCommentExterior) { }
 
         internal override void CreateNewComment(string docCommentExterior)
         {
@@ -153,8 +181,8 @@ namespace GenerateDocumentationComments
 
     internal class ConstructorSummaryDocumentationComment : SummaryDocumentationComment
     {
-        internal ConstructorSummaryDocumentationComment(XmlElementSyntax summaryElement, string docCommentExterior)
-            : base(summaryElement, docCommentExterior) { }
+        internal ConstructorSummaryDocumentationComment(SyntaxNode nodeToDocument, string docCommentExterior)
+            : base(nodeToDocument, docCommentExterior) { }
 
         internal override void CreateNewComment(string docCommentExterior)
         {
@@ -164,7 +192,11 @@ namespace GenerateDocumentationComments
             firstTextNode.AddToken(firstNewlineToken);
             firstTextNode.AddToken(firstPartSummaryComment);
 
-            var cref = new CrefNode("Class1");
+            var className = nodeBeingDocumented.ChildTokens()
+                .Where(t => t.IsKind(SyntaxKind.IdentifierToken))
+                .First()
+                .ToFullString();
+            var cref = new CrefNode(className);
 
             var secondPartSummaryComment = new LiteralTextTokenWithNoDocCommentExterior(" class.");
             var secondNewlineToken = new NewlineToken();
