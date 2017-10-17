@@ -75,7 +75,6 @@ public class Class2
             Assert.Equal(expected, result.ToFullString());
         }
         
-        /*
         [Fact]
         public void ShouldNotAddSummaryDocCommentsToConstructorDeclarationWithCommentsNoArguments()
         {
@@ -109,6 +108,6 @@ public class Class1
             var result = rewriter.Visit(root);
 
             Assert.Equal(expected, result.ToFullString());
-        }*/
+        }
     }
 }
