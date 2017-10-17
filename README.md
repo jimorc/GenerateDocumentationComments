@@ -3,7 +3,8 @@ A Visual Studio extension for generating C# documentation comments
 
 At this time, boilerplate summary documentation comments are added to public, protected,
 and internal class declarations when the Tools->Invoke GenerateDocumentationCommentsInEditor
-menu item is selected.
+menu item is selected. Summary documentation is also added to public, protected, and internal
+class constructors.
 
 I blog about this extension. See the following posts for information about this extension:
 
@@ -21,10 +22,13 @@ at creating a Visual Studio extension with a menu item that will generate docume
 the active document (the document in the active editor window). It shows how to retrieve the source code
 in the active document, at a high level how to modify the source code to add documentation comments, and
 finally, how to write the modified source code back to the active document.
-4. Creating A Documentation Comment Generator For C#: DocumentCommentsRewriter Class (to be published) discusses how
+4. [Creating A Documentation Comment Generator For C#: DocumentCommentsRewriter Class](https://jaipblog.wordpress.com/2017/09/29/creating-a-documentation-comment-generator-for-c-documentcommentsrewriter-class/) 
+discusses how
 each syntax node is processed for documentation comment generation, and how that translates into the structure of the 
 class that generates that output.
-5. Creating A Documentation Comment Generator For C#: Unit Testing (to be published) begins the discussion of
+5. [Creating A Documentation Comment Generator For C#: Unit Testing]
+(https://jaipblog.wordpress.com/2017/10/13/creating-a-documentation-comment-generator-for-c-unit-testing/) 
+begins the discussion of
 testing of the documentation comments generator by looking at the four levels of testing and then discussing
 unit testing in some detail.
 6. Creating A Documentation Comment Generator For C#: Integration, System, And Acceptance Testing 
