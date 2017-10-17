@@ -22,7 +22,7 @@ at creating a Visual Studio extension with a menu item that will generate docume
 the active document (the document in the active editor window). It shows how to retrieve the source code
 in the active document, at a high level how to modify the source code to add documentation comments, and
 finally, how to write the modified source code back to the active document.
-4. [Creating A Documentation Comment Generator For C#: DocumentCommentsRewriter Class(
+4. [Creating A Documentation Comment Generator For C#: DocumentCommentsRewriter Class](
 https://jaipblog.wordpress.com/2017/09/29/creating-a-documentation-comment-generator-for-c-documentcommentsrewriter-class/) 
 discusses how
 each syntax node is processed for documentation comment generation, and how that translates into the structure of the 
