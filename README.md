@@ -27,8 +27,8 @@ https://jaipblog.wordpress.com/2017/09/29/creating-a-documentation-comment-gener
 discusses how
 each syntax node is processed for documentation comment generation, and how that translates into the structure of the 
 class that generates that output.
-5. [Creating A Documentation Comment Generator For C#: Unit Testing]
-(https://jaipblog.wordpress.com/2017/10/13/creating-a-documentation-comment-generator-for-c-unit-testing/) 
+5. [Creating A Documentation Comment Generator For C#: Unit Testing](
+https://jaipblog.wordpress.com/2017/10/13/creating-a-documentation-comment-generator-for-c-unit-testing/) 
 begins the discussion of
 testing of the documentation comments generator by looking at the four levels of testing and then discussing
 unit testing in some detail.
