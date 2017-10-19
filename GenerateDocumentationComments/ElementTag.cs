@@ -5,6 +5,7 @@ namespace GenerateDocumentationComments
 {
     internal abstract class ElementTag
     {
+        /// <param name="tagName">Name of the tag.</param>
         internal ElementTag(string tagName)
         {
             this.tagName = tagName;
@@ -16,13 +17,26 @@ namespace GenerateDocumentationComments
     internal class StartTag : ElementTag
     {
         internal StartTag(string tagName)
-            : base(tagName) { }
+            : base(tagName)
+        {
+            Attribute = null;
+        }
+
         internal XmlElementStartTagSyntax CreateTag()
         {
-            return SyntaxFactory.XmlElementStartTag(
+            var tag = SyntaxFactory.XmlElementStartTag(
                 SyntaxFactory.XmlName(
                     SyntaxFactory.Identifier(tagName)));
+            if (Attribute != null)
+            {
+                tag = tag.WithAttributes(
+                    SyntaxFactory.SingletonList<XmlAttributeSyntax>(
+                        Attribute.CreateAttribute()));
+            }
+            return tag;
         }
+
+        internal Attribute Attribute { get; set; }
     }
 
     internal class EndTag : ElementTag
@@ -35,5 +49,29 @@ namespace GenerateDocumentationComments
                 SyntaxFactory.XmlName(
                     SyntaxFactory.Identifier(tagName)));
         }
+    }
+
+    internal class Attribute
+    {
+        internal Attribute(string attributeName, string attributeValue)
+        {
+            name = attributeName;
+            value = attributeValue;
+        }
+
+        internal XmlNameAttributeSyntax CreateAttribute()
+        {
+            return SyntaxFactory.XmlNameAttribute(
+                        SyntaxFactory.XmlName(
+                            // " " needed to separate attribute name from surrounding text
+                            SyntaxFactory.Identifier(" " + name)),
+                        SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken),
+                        SyntaxFactory.IdentifierName(value),
+                        SyntaxFactory.Token(SyntaxKind.DoubleQuoteToken));
+
+        }
+
+        public string name;
+        public string value;
     }
 }

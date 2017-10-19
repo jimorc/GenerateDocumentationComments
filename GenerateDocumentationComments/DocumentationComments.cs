@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,6 +19,7 @@ namespace GenerateDocumentationComments
         protected SyntaxTrivia lastLeadingTrivia;
         protected string docCommentDelimiter;
     }
+
     internal class ClassDocumentationComments : DocumentationComments
     {
         internal ClassDocumentationComments(SyntaxNode nodeToDocument)
@@ -62,6 +64,19 @@ namespace GenerateDocumentationComments
             : base(nodeToDocument)
         {
             summaryComment = new ConstructorSummaryDocumentationComment(nodeToDocument, docCommentDelimiter);
+            var paramList = nodeToDocument.ChildNodes()
+                .Where(n => n.IsKind(SyntaxKind.ParameterList))
+                .First();
+            var parameters = paramList.ChildNodes()
+                .Where(p => p.IsKind(SyntaxKind.Parameter));
+            foreach(var param in parameters)
+            {
+                var paramName = param.ChildTokens()
+                    .Where(n => n.IsKind(SyntaxKind.IdentifierToken))
+                    .First()
+                    .Text;
+                paramComments.Add(new ParameterDocumentationComment(paramName, nodeToDocument, docCommentDelimiter));
+            }
         }
 
         internal SyntaxTrivia CreateCommentsTrivia()
@@ -76,6 +91,13 @@ namespace GenerateDocumentationComments
             textNode.AddToken(firstTextToken);
             comments.AddNode(textNode);
             comments.AddNodesRange(summaryComment.Nodes);
+            if(paramComments.Count > 0)
+            {
+                foreach(var paramComment in paramComments)
+                {
+                    comments.AddNodesRange(paramComment.Nodes);
+                }
+            }
 
             var lastNewlineToken = new NewlineToken();
             var lastTextNode = new TextNode(docCommentDelimiter);
@@ -92,5 +114,6 @@ namespace GenerateDocumentationComments
         }
 
         private BaseDocumentationComment summaryComment;
+        private List<BaseDocumentationComment> paramComments = new List<BaseDocumentationComment>();
     }
 }

@@ -28,7 +28,7 @@ namespace GenerateDocumentationComments
             XmlElementSyntax summaryElement = null;
             var xmlTriviaList = nodeBeingDocumented.GetLeadingTrivia().Select(i => i.GetStructure())
                 .OfType<DocumentationCommentTriviaSyntax>();
-            if(xmlTriviaList != null)
+            if (xmlTriviaList != null)
             {
                 var xmlTrivia = xmlTriviaList.FirstOrDefault();
                 if (xmlTrivia != null)
@@ -209,5 +209,52 @@ namespace GenerateDocumentationComments
             Node[] nodes = { firstTextNode, cref, secondTextNode };
             AddExampleElementNode(nodes, docCommentExterior);
         }
+    }
+
+    internal class ParameterDocumentationComment : BaseDocumentationComment
+    {
+        internal ParameterDocumentationComment(string parameterName, SyntaxNode nodeToDocument, string docCommentExterior)
+            : base(nodeToDocument)
+        {
+            paramName = parameterName;
+            CreateNewComment(docCommentExterior);
+        }
+
+        internal override void CreateNewComment(string docCommentExterior)
+        {
+            var firstTextNewLineToken = new NewlineToken();
+            var firstTextPartToken = new LiteralTextToken(" ");
+            var firstTextNode = new TextNode(docCommentExterior);
+            firstTextNode.AddToken(firstTextNewLineToken);
+            firstTextNode.AddToken(firstTextPartToken);
+
+            var textToken = new LiteralTextToken("The text.");
+            var paramTextNode = new TextNode("");
+            paramTextNode.AddToken(textToken);
+            var startTag = new StartTag("param");
+            var nameAttribute = new Attribute("name", paramName);
+            startTag.Attribute = nameAttribute;
+            var endTag = new EndTag("param");
+
+            var exampleElementNode = new ExampleElementNode(docCommentExterior);
+            exampleElementNode.AddNode(paramTextNode);
+            exampleElementNode.StartTag = startTag;
+            exampleElementNode.EndTag = endTag;
+
+            AddNode(firstTextNode);
+            AddNode(exampleElementNode);
+        }
+
+        internal override SyntaxList<XmlNodeSyntax> CreateXmlNodes(string commentDelimiter)
+        {
+            var xmlNodes = SyntaxFactory.List<XmlNodeSyntax>();
+            foreach (var node in nodes)
+            {
+                xmlNodes = xmlNodes.Add(node.CreateXmlNode());
+            }
+            return xmlNodes;
+        }
+
+        private string paramName;
     }
 }

@@ -42,7 +42,6 @@ public class Class1
             Assert.Equal(expected, result.ToFullString());
         }
 
-
         [Fact]
         public void ShouldAddSummaryDocCommentsToClass2ConstructorDeclarationNoArguments()
         {
@@ -98,6 +97,39 @@ public class Class1
     /// Non-standard constructor comment.
     /// </summary>
     public Class1()
+    {
+    }
+}";
+            var tree = CSharpSyntaxTree.ParseText(consDecl);
+            var rewriter = new GenerateDocumentationComments.DocumentCommentsRewriter();
+            var root = (CompilationUnitSyntax)tree.GetRoot();
+
+            var result = rewriter.Visit(root);
+
+            Assert.Equal(expected, result.ToFullString());
+        }
+
+        [Fact]
+        public void ShouldAddParamDocCommentsToClass2ConstructorDeclarationOneArgument()
+        {
+            var consDecl =
+@"public class Class2
+{
+    public Class2(string text)
+    {
+    }
+}";
+        var expected =
+            @"/// <summary>
+/// 
+/// </summary>
+public class Class2
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref=""Class2""/> class.
+    /// </summary>
+    /// <param name=""text"">The text.</param>
+    public Class2(string text)
     {
     }
 }";
