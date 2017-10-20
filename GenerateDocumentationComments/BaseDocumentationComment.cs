@@ -262,6 +262,13 @@ namespace GenerateDocumentationComments
         {
             string parameterTextString;
             var parameterNameParts = SplitParameterNameIntoParts();
+            for (int i = 0; i < parameterNameParts.Count; i++)
+            {
+                if (parameterNameParts[i] == "doc")
+                {
+                    parameterNameParts[i] = "document";
+                }
+            }
             if (parameterNameParts.Last() == "name" && parameterNameParts.Count != 1)
             {
                 parameterTextString = "Name of the";
