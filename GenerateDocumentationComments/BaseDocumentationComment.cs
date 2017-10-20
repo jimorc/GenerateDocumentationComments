@@ -228,7 +228,8 @@ namespace GenerateDocumentationComments
             firstTextNode.AddToken(firstTextNewLineToken);
             firstTextNode.AddToken(firstTextPartToken);
 
-            var textToken = new LiteralTextToken("The text.");
+            var literalText = "The " + paramName + ".";
+            var textToken = new LiteralTextToken(literalText);
             var paramTextNode = new TextNode("");
             paramTextNode.AddToken(textToken);
             var startTag = new StartTag("param");

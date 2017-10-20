@@ -109,17 +109,20 @@ public class Class1
             Assert.Equal(expected, result.ToFullString());
         }
 
-        [Fact]
-        public void ShouldAddParamDocCommentsToClass2ConstructorDeclarationOneArgument()
+        [Theory]
+        [InlineData("text", "The text.")]
+        [InlineData("name", "The name.")]
+        public void ShouldAddParamDocCommentsToClass2ConstructorDeclarationOneArgument(string argument, string text)
         {
             var consDecl =
 @"public class Class2
 {
-    public Class2(string text)
+    public Class2(string " + argument +
+    @")
     {
     }
 }";
-        var expected =
+            var expected =
             @"/// <summary>
 /// 
 /// </summary>
@@ -128,8 +131,9 @@ public class Class2
     /// <summary>
     /// Initializes a new instance of the <see cref=""Class2""/> class.
     /// </summary>
-    /// <param name=""text"">The text.</param>
-    public Class2(string text)
+    /// <param name=""" + argument + @""">" + text +
+                @"</param>
+    public Class2(string " + argument + @")
     {
     }
 }";
