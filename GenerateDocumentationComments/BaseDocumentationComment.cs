@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -228,7 +230,7 @@ namespace GenerateDocumentationComments
             firstTextNode.AddToken(firstTextNewLineToken);
             firstTextNode.AddToken(firstTextPartToken);
 
-            var literalText = "The " + paramName + ".";
+            var literalText = CreateParameterTextString();
             var textToken = new LiteralTextToken(literalText);
             var paramTextNode = new TextNode("");
             paramTextNode.AddToken(textToken);
@@ -254,6 +256,45 @@ namespace GenerateDocumentationComments
                 xmlNodes = xmlNodes.Add(node.CreateXmlNode());
             }
             return xmlNodes;
+        }
+
+        internal string CreateParameterTextString()
+        {
+            string parameterTextString;
+            var parameterNameParts = SplitParameterNameIntoParts();
+            if (parameterNameParts.Last() == "name" && parameterNameParts.Count != 1)
+            {
+                parameterTextString = "Name of the";
+                for (int i = 0; i < parameterNameParts.Count - 1; i++)
+                {
+                    parameterTextString += " " + parameterNameParts[i];
+                }
+            }
+            else
+            {
+                parameterTextString = "The";
+                foreach (var part in parameterNameParts)
+                {
+                    parameterTextString += " " + part;
+                }
+            }
+            return parameterTextString + ".";
+        }
+
+        private List<string> SplitParameterNameIntoParts()
+        {
+            var splitParts = Regex.Replace(Regex.Replace(paramName, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
+            string[] separators = { " " };
+            var parts = splitParts.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            var paramParts = new List<string>();
+            var cultureInfo = Thread.CurrentThread.CurrentCulture;
+            var textInfo = cultureInfo.TextInfo;
+            foreach(var part in parts)
+            {
+                var modifiedPart = textInfo.ToLower(part);
+                paramParts.Add(modifiedPart);
+            }
+            return paramParts;
         }
 
         private string paramName;

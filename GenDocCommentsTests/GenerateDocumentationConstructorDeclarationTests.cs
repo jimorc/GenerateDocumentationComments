@@ -112,6 +112,7 @@ public class Class1
         [Theory]
         [InlineData("text", "The text.")]
         [InlineData("name", "The name.")]
+        [InlineData("syntaxNodeName", "Name of the syntax node.")]
         public void ShouldAddParamDocCommentsToClass2ConstructorDeclarationOneArgument(string argument, string text)
         {
             var consDecl =
