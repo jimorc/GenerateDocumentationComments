@@ -318,15 +318,23 @@ namespace GenerateDocumentationComments
 
         private string CreateFirstParameterTextWord(ref List<string> nameParts)
         {
-            string firstParamText = "The";
-            if(nameParts[0].Equals("an"))
+            string firstParamText;
+            if(firstWords.TryGetValue(nameParts[0], out firstParamText))
             {
-                firstParamText = "An";
                 nameParts.RemoveAt(0);
+            }
+            else
+            {
+                firstParamText = "The";
             }
             return firstParamText;
         }
 
         private string paramName;
+
+        private static Dictionary<string, string> firstWords =
+            new Dictionary<string, string>() { { "a", "A" },
+                {"an", "An" },
+                 };
     }
 }
