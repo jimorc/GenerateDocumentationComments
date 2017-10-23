@@ -273,7 +273,7 @@ namespace GenerateDocumentationComments
             }
             else
             {
-                parameterTextString = "The";
+                parameterTextString = CreateFirstParameterTextWord(ref parameterNameParts);
                 foreach (var part in parameterNameParts)
                 {
                     parameterTextString += " " + part;
@@ -314,6 +314,17 @@ namespace GenerateDocumentationComments
                 }
             }
             return paramParts;
+        }
+
+        private string CreateFirstParameterTextWord(ref List<string> nameParts)
+        {
+            string firstParamText = "The";
+            if(nameParts[0].Equals("an"))
+            {
+                firstParamText = "An";
+                nameParts.RemoveAt(0);
+            }
+            return firstParamText;
         }
 
         private string paramName;
