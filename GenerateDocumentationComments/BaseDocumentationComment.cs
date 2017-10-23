@@ -335,7 +335,8 @@ namespace GenerateDocumentationComments
         private static Dictionary<string, string> firstWords =
             new Dictionary<string, string>() { { "a", "A" },
                 {"an", "An" },
-                {"my", "My" }
+                {"my", "My" },
+                {"the", "The" }
                  };
     }
 }
