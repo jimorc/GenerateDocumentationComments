@@ -114,6 +114,7 @@ public class Class1
         [InlineData("name", "The name.")]
         [InlineData("syntaxNodeName", "Name of the syntax node.")]
         [InlineData("docCommentDelimiter", "The document comment delimiter.")]
+        [InlineData("programIDValue", "The program ID value.")]
         public void ShouldAddParamDocCommentsToClass2ConstructorDeclarationOneArgument(string argument, string text)
         {
             var consDecl =

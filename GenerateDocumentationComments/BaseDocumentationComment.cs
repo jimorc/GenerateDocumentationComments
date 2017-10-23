@@ -303,8 +303,15 @@ namespace GenerateDocumentationComments
             var textInfo = cultureInfo.TextInfo;
             foreach(var part in parts)
             {
-                var modifiedPart = textInfo.ToLower(part);
-                paramParts.Add(modifiedPart);
+                if (!part.Equals(part.ToUpper()))
+                {
+                    var modifiedPart = textInfo.ToLower(part);
+                    paramParts.Add(modifiedPart);
+                }
+                else
+                {
+                    paramParts.Add(part);
+                }
             }
             return paramParts;
         }
