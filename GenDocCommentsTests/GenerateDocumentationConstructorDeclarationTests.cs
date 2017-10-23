@@ -117,6 +117,7 @@ public class Class1
         [InlineData("programIDValue", "The program ID value.")]
         [InlineData("anIBMComputer", "An IBM computer.")]
         [InlineData("aNewParameter", "A new parameter.")]
+        [InlineData("myBestFriend", "My best friend.")]
         public void ShouldAddParamDocCommentsToClass2ConstructorDeclarationOneArgument(string argument, string text)
         {
             var consDecl =
