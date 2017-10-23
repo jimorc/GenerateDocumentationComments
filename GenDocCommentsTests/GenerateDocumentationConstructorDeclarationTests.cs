@@ -119,6 +119,7 @@ public class Class1
         [InlineData("aNewParameter", "A new parameter.")]
         [InlineData("myBestFriend", "My best friend.")]
         [InlineData("theNameOfThisParameter", "The name of this parameter.")]
+        [InlineData("aSyntaxNodeName", "Name of a syntax node.")]
         public void ShouldAddParamDocCommentsToClass2ConstructorDeclarationOneArgument(string argument, string text)
         {
             var consDecl =

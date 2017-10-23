@@ -265,7 +265,7 @@ namespace GenerateDocumentationComments
             ReplaceDocStringWithDocument(parameterNameParts);
             if (parameterNameParts.Last() == "name" && parameterNameParts.Count != 1)
             {
-                parameterTextString = "Name of the";
+                parameterTextString = CreateStartOfNameTextString(ref parameterNameParts);
                 for (int i = 0; i < parameterNameParts.Count - 1; i++)
                 {
                     parameterTextString += " " + parameterNameParts[i];
@@ -280,6 +280,22 @@ namespace GenerateDocumentationComments
                 }
             }
             return parameterTextString + ".";
+        }
+
+        private static string CreateStartOfNameTextString(ref List<string> nameParts)
+        {
+            string nameString = "Name of ";
+            string firstWord;
+            if (firstWords.TryGetValue(nameParts[0], out firstWord))
+            {
+                nameString += firstWord.ToLower();
+                nameParts.RemoveAt(0);
+            }
+            else
+            {
+                nameString += "the";
+            }
+            return nameString;
         }
 
         private static void ReplaceDocStringWithDocument(List<string> parameterNameParts)
