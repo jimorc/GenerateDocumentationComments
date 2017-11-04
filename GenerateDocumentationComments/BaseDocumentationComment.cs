@@ -218,24 +218,96 @@ namespace GenerateDocumentationComments
         internal ParameterDocumentationComment(string parameterName, SyntaxNode nodeToDocument, string docCommentExterior)
             : base(nodeToDocument)
         {
-            paramName = parameterName;
+            ParamName = parameterName;
             CreateNewComment(docCommentExterior);
+        }
+
+        internal ParameterDocumentationComment(XmlElementSyntax parameterElement, SyntaxNode nodeToDocument, string docCommentExterior)
+            : base(nodeToDocument)
+        {
+            var textNodes = parameterElement.ChildNodes();
+            string startTag = string.Empty;
+            string endTag = string.Empty;
+            var startTagAttributes = new List<Attribute>();
+            var tNode = new TextNode(docCommentExterior);
+            foreach (var textNode in textNodes)
+            {
+                switch (textNode.Kind())
+                {
+                    case SyntaxKind.XmlElementStartTag:
+                        var xmlName = textNode.ChildNodes()
+                            .OfType<XmlNameSyntax>()
+                            .FirstOrDefault();
+                        if (xmlName != null)
+                        {
+                            startTag = xmlName.GetText().ToString();
+                        }
+                        startTagAttributes.Clear();
+                        var attributes = textNode.ChildNodes()
+                            .OfType<XmlNameAttributeSyntax>();
+                        foreach (var attribute in attributes)
+                        {
+                            var attr = new Attribute(attribute.Name.ToString(), attribute.Identifier.ToString());
+                            startTagAttributes.Add(attr);
+                        }
+                        break;
+                    case SyntaxKind.XmlElementEndTag:
+                        xmlName = textNode.ChildNodes()
+                            .OfType<XmlNameSyntax>()
+                            .FirstOrDefault();
+                        if (xmlName != null)
+                        {
+                            endTag = xmlName.GetText().ToString();
+                        }
+                        break;
+                    case SyntaxKind.XmlText:
+                        tNode = new TextNode("");
+                        foreach (var token in textNode.ChildTokens())
+                        {
+                            switch (token.Kind())
+                            {
+                                case SyntaxKind.XmlTextLiteralNewLineToken:
+                                    tNode.AddToken(new NewlineToken());
+                                    break;
+                                case SyntaxKind.XmlTextLiteralToken:
+                                    var text = token.ValueText.ToString();
+                                    var textLiteralToken = new LiteralTextToken(text);
+                                    tNode.AddToken(textLiteralToken);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            var elt = new ExampleElementNode(docCommentExterior);
+            elt.AddNode(tNode);
+            if (!String.IsNullOrEmpty(startTag))
+            {
+                elt.StartTag = new StartTag(startTag);
+                foreach(var attr in startTagAttributes)
+                {
+                    elt.StartTag.Attribute = attr;
+                }
+            }
+            if (!String.IsNullOrEmpty(endTag))
+            {
+                elt.EndTag = new EndTag(endTag);
+            }
+            AddNode(elt);
         }
 
         internal override void CreateNewComment(string docCommentExterior)
         {
-            var firstTextNewLineToken = new NewlineToken();
-            var firstTextPartToken = new LiteralTextToken(" ");
-            var firstTextNode = new TextNode(docCommentExterior);
-            firstTextNode.AddToken(firstTextNewLineToken);
-            firstTextNode.AddToken(firstTextPartToken);
-
             var literalText = CreateParameterTextString();
             var textToken = new LiteralTextToken(literalText);
             var paramTextNode = new TextNode("");
             paramTextNode.AddToken(textToken);
             var startTag = new StartTag("param");
-            var nameAttribute = new Attribute("name", paramName);
+            var nameAttribute = new Attribute("name", ParamName);
             startTag.Attribute = nameAttribute;
             var endTag = new EndTag("param");
 
@@ -243,8 +315,6 @@ namespace GenerateDocumentationComments
             exampleElementNode.AddNode(paramTextNode);
             exampleElementNode.StartTag = startTag;
             exampleElementNode.EndTag = endTag;
-
-            AddNode(firstTextNode);
             AddNode(exampleElementNode);
         }
 
@@ -311,7 +381,7 @@ namespace GenerateDocumentationComments
 
         private List<string> SplitParameterNameIntoParts()
         {
-            var splitParts = Regex.Replace(Regex.Replace(paramName, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
+            var splitParts = Regex.Replace(Regex.Replace(ParamName, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
             string[] separators = { " " };
             var parts = splitParts.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             var paramParts = new List<string>();
@@ -346,7 +416,7 @@ namespace GenerateDocumentationComments
             return firstParamText;
         }
 
-        private string paramName;
+        internal string ParamName { get; private set; }
 
         private static Dictionary<string, string> firstWords =
             new Dictionary<string, string>() { { "a", "A" },

@@ -14,6 +14,27 @@ namespace GenerateDocumentationComments
             docCommentDelimiter = lastLeadingTrivia.ToFullString() + DocumentationComments.commentDelimiter;
         }
 
+        protected static IEnumerable<XmlElementSyntax> GetParameterElements(SyntaxNode nodeToDocument)
+        {
+            IEnumerable<XmlElementSyntax> paramElements = null;
+            var xmlTriviaList = nodeToDocument.GetLeadingTrivia()
+                .Select(i => i.GetStructure())
+                .OfType<DocumentationCommentTriviaSyntax>();
+            if (xmlTriviaList != null)
+            {
+                var xmlTrivia = xmlTriviaList.FirstOrDefault();
+                if (xmlTrivia != null)
+                {
+                    var elementTriviaList = xmlTrivia.ChildNodes()
+                        .Select(i => i)
+                        .OfType<XmlElementSyntax>();
+                    paramElements = elementTriviaList
+                        .Where(t => t.StartTag.Name.ToString().Equals("param"));
+                }
+            }
+            return paramElements;
+        }
+
         protected const string commentDelimiter = "///";
 
         protected SyntaxTrivia lastLeadingTrivia;
@@ -64,18 +85,40 @@ namespace GenerateDocumentationComments
             : base(nodeToDocument)
         {
             summaryComment = new ConstructorSummaryDocumentationComment(nodeToDocument, docCommentDelimiter);
-            var paramList = nodeToDocument.ChildNodes()
-                .Where(n => n.IsKind(SyntaxKind.ParameterList))
-                .First();
-            var parameters = paramList.ChildNodes()
-                .Where(p => p.IsKind(SyntaxKind.Parameter));
-            foreach(var param in parameters)
+            IEnumerable<XmlElementSyntax> parameterElements = GetParameterElements(nodeToDocument);
+            var parameterComments = new List<ParameterDocumentationComment>();
+            if (parameterElements != null && parameterElements.Count() != 0)
             {
-                var paramName = param.ChildTokens()
-                    .Where(n => n.IsKind(SyntaxKind.IdentifierToken))
-                    .First()
-                    .Text;
-                paramComments.Add(new ParameterDocumentationComment(paramName, nodeToDocument, docCommentDelimiter));
+                foreach(var paramElement in parameterElements)
+                {
+                    paramComments.Add(new ParameterDocumentationComment(paramElement, nodeToDocument, docCommentDelimiter));
+                }
+            }
+            else
+            {
+                var paramList = nodeToDocument.ChildNodes()
+                    .Where(n => n.IsKind(SyntaxKind.ParameterList))
+                    .First();
+                var parameters = paramList.ChildNodes()
+                    .Where(p => p.IsKind(SyntaxKind.Parameter));
+                foreach (var param in parameters)
+                {
+                    var paramName = param.ChildTokens()
+                        .Where(n => n.IsKind(SyntaxKind.IdentifierToken))
+                        .First()
+                        .Text;
+                    var paramComment = parameterComments
+                        .Where(c => c.ParamName.Equals(paramName))
+                        .FirstOrDefault();
+                    if(paramComment != null)
+                    {
+                        paramComments.Add(paramComment);
+                    }
+                    else
+                    {
+                        paramComments.Add(new ParameterDocumentationComment(paramName, nodeToDocument, docCommentDelimiter));
+                    }
+                }
             }
         }
 
@@ -95,6 +138,11 @@ namespace GenerateDocumentationComments
             {
                 foreach(var paramComment in paramComments)
                 {
+                    var newlineToken = new NewlineToken();
+                    var newlineNode = new TextNode(docCommentDelimiter);
+                    newlineNode.AddToken(newlineToken);
+                    comments.AddNode(newlineNode);
+                    comments.AddNode(textNode);
                     comments.AddNodesRange(paramComment.Nodes);
                 }
             }
