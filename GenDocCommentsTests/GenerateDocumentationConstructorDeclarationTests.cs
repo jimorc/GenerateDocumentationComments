@@ -73,7 +73,7 @@ public class Class2
 
             Assert.Equal(expected, result.ToFullString());
         }
-        
+
         [Fact]
         public void ShouldNotAddSummaryDocCommentsToConstructorDeclarationWithCommentsNoArguments()
         {
@@ -221,6 +221,47 @@ public class Class2
         /// </summary>
         /// <param name=""text"">The text parameter.</param>
         public Class1(string text)
+        {
+        }
+    }";
+            var tree = CSharpSyntaxTree.ParseText(consDecl);
+            var rewriter = new GenerateDocumentationComments.DocumentCommentsRewriter();
+            var root = (CompilationUnitSyntax)tree.GetRoot();
+
+            var result = rewriter.Visit(root);
+
+            Assert.Equal(expected, result.ToFullString());
+        }
+
+        [Fact]
+        public void ShouldAddParameterDocCommentsToConstructorDeclarationWithThreeParameters()
+        {
+            var consDecl =
+    @"    /// <summary>
+    /// A summary comment.
+    /// </summary>
+    public class Class1
+    {
+        /// <summary>
+        /// Non-standard constructor comment.
+        /// </summary>
+        public Class1(string text, string anotherString, string yetAnotherString)
+        {
+        }
+    }";
+            var expected =
+                @"    /// <summary>
+    /// A summary comment.
+    /// </summary>
+    public class Class1
+    {
+        /// <summary>
+        /// Non-standard constructor comment.
+        /// </summary>
+        /// <param name=""text"">The text.</param>
+        /// <param name=""anotherString"">The another string.</param>
+        /// <param name=""yetAnotherString"">The yet another string.</param>
+        public Class1(string text, string anotherString, string yetAnotherString)
         {
         }
     }";
