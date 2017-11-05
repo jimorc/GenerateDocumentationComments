@@ -80,19 +80,30 @@ namespace GenerateDocumentationComments
             }
             var elt = new ExampleElementNode(DocCommentExterior);
             elt.AddNode(tNode);
-            if (!String.IsNullOrEmpty(startTag))
+            if(!String.IsNullOrEmpty(startTag))
             {
-                elt.StartTag = new StartTag(startTag);
-                foreach (var attr in startTagAttributes)
-                {
-                    elt.StartTag.Attribute = attr;
-                }
+                elt.StartTag = CreateStartTag(startTag, startTagAttributes);
             }
             if (!String.IsNullOrEmpty(endTag))
             {
-                elt.EndTag = new EndTag(endTag);
+                elt.EndTag = CreateEndTag(endTag);
             }
             return elt;
+        }
+
+        private static StartTag CreateStartTag(string startTag, List<Attribute> startTagAttributes)
+        {
+            StartTag sTag = new StartTag(startTag);
+            foreach (var attr in startTagAttributes)
+            {
+                sTag.Attribute = attr;
+            }
+            return sTag;
+        }
+
+        private static EndTag CreateEndTag(string endTag)
+        {
+            return new EndTag(endTag);
         }
 
         private TextNode GetTextNodeFromCoomentTextNode(SyntaxNode textNode)
@@ -114,7 +125,6 @@ namespace GenerateDocumentationComments
                         break;
                 }
             }
-
             return tNode;
         }
 
