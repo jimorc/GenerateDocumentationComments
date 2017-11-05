@@ -32,8 +32,8 @@ https://jaipblog.wordpress.com/2017/10/13/creating-a-documentation-comment-gener
 begins the discussion of
 testing of the documentation comments generator by looking at the four levels of testing and then discussing
 unit testing in some detail.
-6. Creating A Documentation Comment Generator For C#: Integration, System, And Acceptance Testing 
-(to be published)discusses integration, system, and acceptance testing that I will perform.
+6. [Creating A Documentation Comment Generator For C#: Integration, System, And Acceptance Testing](
+https://jaipblog.wordpress.com/2017/10/20/creating-a-documentation-comment-generator-for-c-integration-system-and-acceptance-testing/) discusses integration, system, and acceptance testing that I will perform.
 
 Future posts will be used to extend the discussion.
 
