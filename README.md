@@ -43,4 +43,4 @@ Future posts will be used to extend the discussion.
    * Visual Studio extension development
 2. .Net Compiler Platform SDK extension
 3. DGML editor if you want to activate the View Directed Syntax Graph menu item in the Syntax Visualizer. See the
-Syntax Visualizer section of Tools For Viewing And Creating Roslyn Syntax Trees (to be published).
+Syntax Visualizer section of the [Tools For Viewing And Creating Roslyn Syntax Trees](https://jaipblog.wordpress.com/2017/10/06/tools-for-viewing-and-creating-roslyn-syntax-trees/) post.
