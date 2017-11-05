@@ -14,7 +14,7 @@ namespace GenerateDocumentationComments
             docCommentDelimiter = lastLeadingTrivia.ToFullString() + DocumentationComments.commentDelimiter;
         }
 
-        protected static IEnumerable<XmlElementSyntax> GetParameterElements(SyntaxNode nodeToDocument)
+        protected static IEnumerable<XmlElementSyntax> GetParameterElementsFromNode(SyntaxNode nodeToDocument)
         {
             IEnumerable<XmlElementSyntax> paramElements = null;
             var xmlTriviaList = nodeToDocument.GetLeadingTrivia()
@@ -85,7 +85,7 @@ namespace GenerateDocumentationComments
             : base(nodeToDocument)
         {
             summaryComment = new ConstructorSummaryDocumentationComment(nodeToDocument, docCommentDelimiter);
-            IEnumerable<XmlElementSyntax> parameterElements = GetParameterElements(nodeToDocument);
+            IEnumerable<XmlElementSyntax> parameterElements = GetParameterElementsFromNode(nodeToDocument);
             var parameterComments = new List<ParameterDocumentationComment>();
             if (parameterElements != null && parameterElements.Count() != 0)
             {
