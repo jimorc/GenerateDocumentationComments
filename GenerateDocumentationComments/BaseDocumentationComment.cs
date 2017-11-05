@@ -24,7 +24,7 @@ namespace GenerateDocumentationComments
         }
 
         internal abstract SyntaxList<XmlNodeSyntax> CreateXmlNodes(string commentDelimiter);
-        internal abstract void CreateNewComment(string docCommentExterior);
+        internal abstract void CreateNewComment();
 
         protected XmlElementSyntax GetSummaryElement()
         {
@@ -154,7 +154,7 @@ namespace GenerateDocumentationComments
             }
             else
             {
-                CreateNewComment(docCommentExterior);
+                CreateNewComment();
             }
         }
 
@@ -168,9 +168,9 @@ namespace GenerateDocumentationComments
             return xmlNodes;
         }
 
-        protected void AddExampleElementNode(Node[] nodes, string docCommentExterior)
+        protected void AddExampleElementNode(Node[] nodes)
         {
-            var exampleElementNode = new ExampleElementNode(docCommentExterior);
+            var exampleElementNode = new ExampleElementNode(DocCommentExterior);
             foreach (var node in nodes)
             {
                 exampleElementNode.AddNode(node);
@@ -192,21 +192,21 @@ namespace GenerateDocumentationComments
         internal ClassSummaryDocumentationComment(SyntaxNode nodeToDocument, string docCommentExterior)
             : base(nodeToDocument, docCommentExterior) { }
 
-        internal override void CreateNewComment(string docCommentExterior)
+        internal override void CreateNewComment()
         {
             var firstNewlineToken = new NewlineToken();
             var firstPartSummaryComment = new LiteralTextToken(" ");
             var secondNewLineToken = new NewlineToken();
             var secondTextLiteral = new LiteralTextToken(" ");
 
-            var elementTextNode = new TextNode(docCommentExterior);
+            var elementTextNode = new TextNode(DocCommentExterior);
             elementTextNode.AddToken(firstNewlineToken);
             elementTextNode.AddToken(firstPartSummaryComment);
             elementTextNode.AddToken(secondNewLineToken);
             elementTextNode.AddToken(secondTextLiteral);
 
             Node[] nodes = { elementTextNode };
-            AddExampleElementNode(nodes, docCommentExterior);
+            AddExampleElementNode(nodes);
         }
     }
 
@@ -215,11 +215,11 @@ namespace GenerateDocumentationComments
         internal ConstructorSummaryDocumentationComment(SyntaxNode nodeToDocument, string docCommentExterior)
             : base(nodeToDocument, docCommentExterior) { }
 
-        internal override void CreateNewComment(string docCommentExterior)
+        internal override void CreateNewComment()
         {
             var firstNewlineToken = new NewlineToken();
             var firstPartSummaryComment = new LiteralTextToken(" Initializes a new instance of the ");
-            var firstTextNode = new TextNode(docCommentExterior);
+            var firstTextNode = new TextNode(DocCommentExterior);
             firstTextNode.AddToken(firstNewlineToken);
             firstTextNode.AddToken(firstPartSummaryComment);
 
@@ -232,13 +232,13 @@ namespace GenerateDocumentationComments
             var secondPartSummaryComment = new LiteralTextTokenWithNoDocCommentExterior(" class.");
             var secondNewlineToken = new NewlineToken();
             var thirdPartSummaryComment = new LiteralTextToken(" ");
-            var secondTextNode = new TextNode(docCommentExterior);
+            var secondTextNode = new TextNode(DocCommentExterior);
             secondTextNode.AddToken(secondPartSummaryComment);
             secondTextNode.AddToken(secondNewlineToken);
             secondTextNode.AddToken(thirdPartSummaryComment);
 
             Node[] nodes = { firstTextNode, cref, secondTextNode };
-            AddExampleElementNode(nodes, docCommentExterior);
+            AddExampleElementNode(nodes);
         }
     }
 
@@ -248,7 +248,7 @@ namespace GenerateDocumentationComments
             : base(nodeToDocument, docCommentExterior)
         {
             ParamName = parameterName;
-            CreateNewComment(docCommentExterior);
+            CreateNewComment();
         }
 
         internal ParameterDocumentationComment(XmlElementSyntax parameterElement, SyntaxNode nodeToDocument, string docCommentExterior)
@@ -259,7 +259,7 @@ namespace GenerateDocumentationComments
             AddNode(elt);
         }
 
-        internal override void CreateNewComment(string docCommentExterior)
+        internal override void CreateNewComment()
         {
             var literalText = CreateParameterTextString();
             var textToken = new LiteralTextToken(literalText);
@@ -270,7 +270,7 @@ namespace GenerateDocumentationComments
             startTag.Attribute = nameAttribute;
             var endTag = new EndTag("param");
 
-            var exampleElementNode = new ExampleElementNode(docCommentExterior);
+            var exampleElementNode = new ExampleElementNode(DocCommentExterior);
             exampleElementNode.AddNode(paramTextNode);
             exampleElementNode.StartTag = startTag;
             exampleElementNode.EndTag = endTag;
