@@ -64,49 +64,15 @@ namespace GenerateDocumentationComments
                 switch (textNode.Kind())
                 {
                     case SyntaxKind.XmlElementStartTag:
-                        var xmlName = textNode.ChildNodes()
-                            .OfType<XmlNameSyntax>()
-                            .FirstOrDefault();
-                        if (xmlName != null)
-                        {
-                            startTag = xmlName.GetText().ToString();
-                        }
+                        startTag = GetStartTagName(textNode);
                         startTagAttributes.Clear();
-                        var attributes = textNode.ChildNodes()
-                            .OfType<XmlNameAttributeSyntax>();
-                        foreach (var attribute in attributes)
-                        {
-                            var attr = new Attribute(attribute.Name.ToString(), attribute.Identifier.ToString());
-                            startTagAttributes.Add(attr);
-                        }
+                        GetStartTagAttributes(startTagAttributes, textNode);
                         break;
                     case SyntaxKind.XmlElementEndTag:
-                        xmlName = textNode.ChildNodes()
-                            .OfType<XmlNameSyntax>()
-                            .FirstOrDefault();
-                        if (xmlName != null)
-                        {
-                            endTag = xmlName.GetText().ToString();
-                        }
+                        endTag = GetEndTagName(textNode);
                         break;
                     case SyntaxKind.XmlText:
-                        tNode = CreateTextNode();
-                        foreach (var token in textNode.ChildTokens())
-                        {
-                            switch (token.Kind())
-                            {
-                                case SyntaxKind.XmlTextLiteralNewLineToken:
-                                    tNode.AddToken(new NewlineToken());
-                                    break;
-                                case SyntaxKind.XmlTextLiteralToken:
-                                    var text = token.ValueText.ToString();
-                                    var textLiteralToken = new LiteralTextToken(text);
-                                    tNode.AddToken(textLiteralToken);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                        tNode = GetTextNodeFromCoomentTextNode(textNode);
                         break;
                     default:
                         break;
@@ -127,6 +93,70 @@ namespace GenerateDocumentationComments
                 elt.EndTag = new EndTag(endTag);
             }
             return elt;
+        }
+
+        private TextNode GetTextNodeFromCoomentTextNode(SyntaxNode textNode)
+        {
+            TextNode tNode = CreateTextNode();
+            foreach (var token in textNode.ChildTokens())
+            {
+                switch (token.Kind())
+                {
+                    case SyntaxKind.XmlTextLiteralNewLineToken:
+                        tNode.AddToken(new NewlineToken());
+                        break;
+                    case SyntaxKind.XmlTextLiteralToken:
+                        var text = token.ValueText.ToString();
+                        var textLiteralToken = new LiteralTextToken(text);
+                        tNode.AddToken(textLiteralToken);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return tNode;
+        }
+
+        private static string GetEndTagName(SyntaxNode textNode)
+        {
+            var xmlName = textNode.ChildNodes()
+                .OfType<XmlNameSyntax>()
+                .FirstOrDefault();
+            if (xmlName != null)
+            {
+                return xmlName.GetText().ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        private static void GetStartTagAttributes(List<Attribute> startTagAttributes, SyntaxNode textNode)
+        {
+            var attributes = textNode.ChildNodes()
+                .OfType<XmlNameAttributeSyntax>();
+            foreach (var attribute in attributes)
+            {
+                var attr = new Attribute(attribute.Name.ToString(), attribute.Identifier.ToString());
+                startTagAttributes.Add(attr);
+            }
+        }
+
+        private static string GetStartTagName(SyntaxNode textNode)
+        {
+            var xmlName = textNode.ChildNodes()
+                .OfType<XmlNameSyntax>()
+                .FirstOrDefault();
+            if (xmlName != null)
+            {
+                return xmlName.GetText().ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         protected abstract TextNode CreateTextNode();
