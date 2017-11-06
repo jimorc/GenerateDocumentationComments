@@ -273,5 +273,45 @@ public class Class2
 
             Assert.Equal(expected, result.ToFullString());
         }
+
+        [Fact]
+        public void ShouldModifyParameterDocCommentsToConstructorDeclarationWithMismatchedParameterName()
+        {
+            var consDecl =
+    @"    /// <summary>
+    /// A summary comment.
+    /// </summary>
+    public class Class1
+    {
+        /// <summary>
+        /// Non-standard constructor comment.
+        /// </summary>
+        /// <param name=""text"">The text.</param>
+        public Class1(string newText)
+        {
+        }
+    }";
+            var expected =
+                @"    /// <summary>
+    /// A summary comment.
+    /// </summary>
+    public class Class1
+    {
+        /// <summary>
+        /// Non-standard constructor comment.
+        /// </summary>
+        /// <param name=""newText"">The new text.</param>
+        public Class1(string newText)
+        {
+        }
+    }";
+            var tree = CSharpSyntaxTree.ParseText(consDecl);
+            var rewriter = new GenerateDocumentationComments.DocumentCommentsRewriter();
+            var root = (CompilationUnitSyntax)tree.GetRoot();
+
+            var result = rewriter.Visit(root);
+
+            Assert.Equal(expected, result.ToFullString());
+        }
     }
 }

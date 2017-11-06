@@ -85,39 +85,37 @@ namespace GenerateDocumentationComments
             : base(nodeToDocument)
         {
             summaryComment = new ConstructorSummaryDocumentationComment(nodeToDocument, docCommentDelimiter);
-            IEnumerable<XmlElementSyntax> parameterElements = GetParameterElementsFromNode(nodeToDocument);
+            IEnumerable<XmlElementSyntax> existingParameterElements = GetParameterElementsFromNode(nodeToDocument);
             var parameterComments = new List<ParameterDocumentationComment>();
-            if (parameterElements != null && parameterElements.Count() != 0)
+            if (existingParameterElements != null && existingParameterElements.Count() != 0)
             {
-                foreach(var paramElement in parameterElements)
+                foreach(var paramElement in existingParameterElements)
                 {
-                    paramComments.Add(new ParameterDocumentationComment(paramElement, nodeToDocument, docCommentDelimiter));
+                    parameterComments.Add(new ParameterDocumentationComment(paramElement, nodeToDocument, docCommentDelimiter));
                 }
             }
-            else
+            var paramList = nodeToDocument.ChildNodes()
+                .Where(n => n.IsKind(SyntaxKind.ParameterList))
+                .First();
+            var parameters = paramList.ChildNodes()
+                .Where(p => p.IsKind(SyntaxKind.Parameter));
+            foreach (var param in parameters)
             {
-                var paramList = nodeToDocument.ChildNodes()
-                    .Where(n => n.IsKind(SyntaxKind.ParameterList))
-                    .First();
-                var parameters = paramList.ChildNodes()
-                    .Where(p => p.IsKind(SyntaxKind.Parameter));
-                foreach (var param in parameters)
+                var paramName = param.ChildTokens()
+                    .Where(n => n.IsKind(SyntaxKind.IdentifierToken))
+                    .First()
+                    .Text;
+                var paramComment = parameterComments
+                    .Where(c => c.ParamName.Equals(paramName))
+                    .FirstOrDefault();
+                // if parameter name matches, keep old comment
+                if(paramComment != null)
                 {
-                    var paramName = param.ChildTokens()
-                        .Where(n => n.IsKind(SyntaxKind.IdentifierToken))
-                        .First()
-                        .Text;
-                    var paramComment = parameterComments
-                        .Where(c => c.ParamName.Equals(paramName))
-                        .FirstOrDefault();
-                    if(paramComment != null)
-                    {
                         paramComments.Add(paramComment);
-                    }
-                    else
-                    {
-                        paramComments.Add(new ParameterDocumentationComment(paramName, nodeToDocument, docCommentDelimiter));
-                    }
+                }
+                else            // create new comment
+                {
+                    paramComments.Add(new ParameterDocumentationComment(paramName, nodeToDocument, docCommentDelimiter));
                 }
             }
         }

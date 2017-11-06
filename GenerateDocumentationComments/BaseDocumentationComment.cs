@@ -72,7 +72,7 @@ namespace GenerateDocumentationComments
                         endTag = GetEndTagName(textNode);
                         break;
                     case SyntaxKind.XmlText:
-                        tNode = GetTextNodeFromCoomentTextNode(textNode);
+                        tNode = GetTextNodeFromCommentTextNode(textNode);
                         break;
                     default:
                         break;
@@ -106,7 +106,7 @@ namespace GenerateDocumentationComments
             return new EndTag(endTag);
         }
 
-        private TextNode GetTextNodeFromCoomentTextNode(SyntaxNode textNode)
+        private TextNode GetTextNodeFromCommentTextNode(SyntaxNode textNode)
         {
             TextNode tNode = CreateTextNode();
             foreach (var token in textNode.ChildTokens())
@@ -294,6 +294,12 @@ namespace GenerateDocumentationComments
         internal ParameterDocumentationComment(XmlElementSyntax parameterElement, SyntaxNode nodeToDocument, string docCommentExterior)
             : base(nodeToDocument, docCommentExterior)
         {
+            var paramAttr = parameterElement.StartTag.Attributes
+                .Where(attr => attr.Name.ToString().Equals("name"))
+                .FirstOrDefault();
+            var paramAttrValue = paramAttr.ChildNodes().Where(n => n.IsKind(SyntaxKind.IdentifierName))
+                .First();
+            ParamName = paramAttrValue.ToString();
             var textNodes = parameterElement.ChildNodes();
             ExampleElementNode elt = CreateExampleElementNodeFromCommentTextNodes(textNodes);
             AddNode(elt);
